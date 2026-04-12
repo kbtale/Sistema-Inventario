@@ -1,0 +1,27 @@
+# Dependency directories
+node_modules/
+backend/src/vendor/
+
+# Local database data
+dbdata/
+
+# Build outputs
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Design & Concept documentation (Local reference only)
+*.md
+!README.md
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
