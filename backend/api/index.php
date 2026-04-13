@@ -30,6 +30,16 @@ switch ($request) {
         ]);
         break;
 
+    case '/dashboard':
+        $metrics = [
+            'total_hardware' => $pdo->query('SELECT COUNT(*) FROM Hardware')->fetchColumn(),
+            'total_telefonos' => $pdo->query('SELECT COUNT(*) FROM Telefonos')->fetchColumn(),
+            'in_support' => $pdo->query('SELECT COUNT(*) FROM Estatus WHERE estado_actual_unidad = 2')->fetchColumn(),
+            'available_mobile' => $pdo->query('SELECT COUNT(*) FROM Telefonos t JOIN Estatus e ON t.id_estatus = e.id_estatus WHERE e.estado_actual_unidad = 1')->fetchColumn()
+        ];
+        echo json_encode($metrics);
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $request]);
