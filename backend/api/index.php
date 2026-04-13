@@ -48,6 +48,14 @@ switch ($request) {
         echo json_encode($stmt->fetchAll());
         break;
 
+    case '/telefonos':
+        $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios 
+                            FROM Telefonos t 
+                            LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus 
+                            ORDER BY t.id_telefono DESC');
+        echo json_encode($stmt->fetchAll());
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $request]);
