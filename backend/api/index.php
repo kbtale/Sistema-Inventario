@@ -40,6 +40,14 @@ switch ($request) {
         echo json_encode($metrics);
         break;
 
+    case '/hardware':
+        $stmt = $pdo->query('SELECT e.*, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware, h.usuario_hardware 
+                            FROM Entradas e 
+                            LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware 
+                            ORDER BY e.fecha_entrada DESC');
+        echo json_encode($stmt->fetchAll());
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $request]);
