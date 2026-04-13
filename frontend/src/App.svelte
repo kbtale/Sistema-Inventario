@@ -1,89 +1,60 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from './assets/vite.svg'
-  import heroImg from './assets/hero.png'
-  import Counter from './lib/Counter.svelte'
+  import Layout from './lib/Layout.svelte';
+  import Card from './lib/Card.svelte';
+  import Sidebar from './lib/Sidebar.svelte';
 </script>
 
-<section id="center">
-  <div class="hero">
-    <img src={heroImg} class="base" width="170" height="179" alt="" />
-    <img src={svelteLogo} class="framework" alt="Svelte logo" />
-    <img src={viteLogo} class="vite" alt="Vite logo" />
+<Layout>
+  <div slot="sidebar">
+    <Sidebar />
   </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/App.svelte</code> and save to test <code>HMR</code></p>
-  </div>
-  <Counter />
-</section>
 
-<div class="ticks"></div>
+  <div slot="content">
+    <header style="margin-bottom: var(--space-xl);">
+      <h1 style="color: var(--color-primary); margin-bottom: var(--space-xs);">Asset Inventory</h1>
+      <p>Modern Infrastructure Management for SIOTIC</p>
+    </header>
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#documentation-icon"></use>
-    </svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank" rel="noreferrer">
-          <img class="logo" src={viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://svelte.dev/" target="_blank" rel="noreferrer">
-          <img class="button-icon" src={svelteLogo} alt="" />
-          Learn more
-        </a>
-      </li>
-    </ul>
+    <div class="metrics-grid">
+      <Card>
+        <div class="metric-label">Registered Assets</div>
+        <div class="metric-value">642</div>
+      </Card>
+      <Card>
+        <div class="metric-label">In Support</div>
+        <div class="metric-value" style="color: var(--color-primary)">18</div>
+      </Card>
+      <Card>
+        <div class="metric-label">Available Mobile</div>
+        <div class="metric-value">42</div>
+      </Card>
+    </div>
   </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#social-icon"></use>
-    </svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li>
-        <a href="https://github.com/vitejs/vite" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#github-icon"></use>
-          </svg>
-          GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://chat.vite.dev/" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#discord-icon"></use>
-          </svg>
-          Discord
-        </a>
-      </li>
-      <li>
-        <a href="https://x.com/vite_js" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#x-icon"></use>
-          </svg>
-          X.com
-        </a>
-      </li>
-      <li>
-        <a href="https://bsky.app/profile/vite.dev" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#bluesky-icon"></use>
-          </svg>
-          Bluesky
-        </a>
-      </li>
-    </ul>
-  </div>
-</section>
+</Layout>
 
-<div class="ticks"></div>
-<section id="spacer"></section>
+<style>
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .metric-label {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.6;
+    margin-bottom: var(--space-xs);
+  }
+
+  .metric-value {
+    font-size: 32px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+  }
+
+  @media (max-width: 1024px) {
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
