@@ -1,25 +1,22 @@
 <?php
 require("conexiondb.php");
 /* Asginación */
-	/* Asignación Hardware rellenado */
-
-	/* Asignación Hardware obtención */
-	$query->prepare('SELECT COUNT(id_usuario) from Usuarios');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idUser = $numRows+1;
+	
+	$stmt = $pdo->query('SELECT COUNT(id_usuario) from Usuarios');
+	$idUser = $stmt->fetchColumn(0) + 1;
 
 	if (isset($_POST['inop_asigHard'])) {
-		$query->prepare('UPDATE Estatus SET estado_actual_unidad=2 WHERE id_estatus=:id_estatus'); //Falta tomar la id_estatus
-		$query->execute();
+		$stmt = $pdo->prepare('UPDATE Estatus SET estado_actual_unidad = 2 WHERE id_estatus = :idEstatus');
+		$stmt->execute([':idEstatus' => $idEstatus ?? 0]);
+	} else {
+		$stmt = $pdo->prepare('INSERT INTO Usuarios (id_usuario, nombre_usuario, apellido_usuario, ci_usuario) VALUES (:idU, :nomU, :apeU, :ciU)');
+		$stmt->execute([
+			':idU' => $idUser,
+			':nomU' => $_POST['nom_asigHard'] ?? '',
+			':apeU' => $_POST['apellido_asigHard'] ?? '',
+			':ciU' => $_POST['ci_asigHard'] ?? ''
+		]);
 	}
 
-	$query->prepare('INSERT INTO Usuarios VALUES(:idU_h,:nomU_h,:apeU_h,:ciU_h)');
-	$query->bindParam(:idU_h,$idUser);
-	$query->bindParam(:nomU_h,$_POST['nombre_asig_h']);
-	$query->bindParam(:apeU_h,$_POST['apellido_asig_h']);
-	$query->bindParam(:ciU_h,$_POST['ci_asig_h']);
-
-	$query->execute();
-/*END*/
 
 ?>

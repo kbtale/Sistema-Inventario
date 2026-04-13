@@ -2,40 +2,38 @@
 
 require("conexiondb.php");
 
-/* Ingreso */
-	/* Ingreso Hardware rellenado*/
 
-	/* Ingreso Hardware obtención */
-	$query->prepare('SELECT COUNT(id_hardware) from Hardware');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idHard = $numRows+1;
-	$query->prepare('SELECT COUNT(id_estatus) from Estatus');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idEstatus = $numRows+1;
+	$stmt = $pdo->prepare('SELECT COUNT(id_hardware) from Hardware');
+	$stmt->execute();
+	$numRows = $stmt->fetchColumn(0); 
+	$idHard = $numRows + 1;
 
-	$query->prepare('INSERT INTO Estatus VALUES(:idEst_h,:comentarios_h,:estadoIngreso_h,:cEnt_h,eActual_h)');
-	$query->bindParam(:idEst_h,$idEstatus);
-	$query->bindParam(:comentarios_h,'Nada, por el momento.');
-	$query->bindParam(:estadoIngreso_h,$_POST['h_estado_ingreso']);
-	$query->bindParam(:cEnt_h, 0);
-	$query->bindParam(:eActual_h,1);
+	$stmt = $pdo->prepare('SELECT COUNT(id_estatus) from Estatus');
+	$stmt->execute();
+	$numRows = $stmt->fetchColumn(0); 
+	$idEstatus = $numRows + 1;
 
-	$query->execute();
+	$stmt = $pdo->prepare('INSERT INTO Estatus (id_estatus, comentarios, estado_ingreso, c_ent, estado_actual_unidad) VALUES (:idEst, :comentarios, :estadoIngreso, :cEnt, :eActual)');
+	$stmt->execute([
+		':idEst' => $idEstatus,
+		':comentarios' => 'Nada, por el momento.',
+		':estadoIngreso' => $_POST['h_estado_ingreso'] ?? '',
+		':cEnt' => 0,
+		':eActual' => 1
+	]);
 
-	$query->prepare('INSERT INTO Hardware VALUES(:idHard_h,:tipo_h,:marca_h,:modelo_h,:bienes_h,:usuario_h,:fIngreso_h,:id_estatus_h)');
+	$stmt = $pdo->prepare('INSERT INTO Hardware (id_hardware, tipo_hardware, marca_hardware, modelo_hardware, bienes_hardware, usuario_hardware, fecha_ingreso, id_estatus) VALUES (:idHard, :tipo, :marca, :modelo, :bienes, :usuario, :fIngreso, :idEstatus)');
+	
+	$stmt->execute([
+		':idHard' => $idHard,
+		':tipo' => $_POST['h_tipo_ingreso'] ?? '',
+		':marca' => $_POST['h_marca_ingreso'] ?? null,
+		':modelo' => $_POST['h_modelo_ingreso'] ?? null,
+		':bienes' => $_POST['h_bienes_ingreso'] ?? '',
+		':usuario' => 'OTIC',
+		':fIngreso' => $_POST['h_fechaEnt_ingreso'] ?? date('Y-m-d'),
+		':idEstatus' => $idEstatus
+	]);
 
-	$query->bindParam(:idHard_h,$idHard);
-	$query->bindParam(:tipo_h,$_POST['h_tipo_ingreso']);
-	if ($_POST['h_marca_ingreso'])
-	$query->bindParam(:marca_h,$_POST['h_marca_ingreso']);
-	if ($_POST['h_modelo_ingreso'])
-	$query->bindParam(:modelo_h,$_POST['h_modelo_ingreso']);
-	$query->bindParam(:bienes_h,$_POST['h_bienes_ingreso']);
-	$query->bindParam(:usuario_h,'OTIC');
-	$query->bindParam(:fIngreso_h,$_POST['h_fechaEnt_ingreso']);
-	$query->bindParam(:id_estatus_h,$idEstatus);
-
-	$query->execute();
-/*END*/
 
 ?>

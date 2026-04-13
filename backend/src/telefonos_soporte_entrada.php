@@ -1,59 +1,48 @@
 <?php
 require("conexiondb.php");
-/* Entrada */
-	/* Entrada de Teléfonos rellenado */
 
-	/* Entrada de Teléfonos obtención */
+	$stmt = $pdo->query('SELECT COUNT(id_telefono) from Telefonos');
+	$idTel = $stmt->fetchColumn(0) + 1;
 
-	$query->prepare('SELECT COUNT(id_telefono) from Telefonos');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idTel = $numRows+1;
-	$query->prepare('SELECT COUNT(id_estatus) from Estatus');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idEstatus = $numRows+1;
-	$query->prepare('SELECT COUNT(id_entrada) from Entradas');
-	$query->execute();
-	$numRows = $query->fetchColumn(0); $idE_t = $numRows+1; 
+	$stmt = $pdo->query('SELECT COUNT(id_estatus) from Estatus');
+	$idEstatus = $stmt->fetchColumn(0) + 1;
 
-	$query->prepare('INSERT INTO Estatus VALUES(:idEst_t,:comentarios_t,:cEnt_t,eActual_t)');
-	$query->bindParam(:idEst_t,$idEstatus);
-	$query->bindParam(:comentarios_t,$_POST['comentarios_entCel']);
-	$query->bindParam(:cEnt_t, 0);
-	$query->bindParam(:eActual_t,1);
+	$stmt = $pdo->query('SELECT COUNT(id_entrada) from Entradas');
+	$idE_t = $stmt->fetchColumn(0) + 1;
 
-	$query->execute();
+	$stmt = $pdo->prepare('INSERT INTO Estatus (id_estatus, comentarios, estado_ingreso, c_ent, estado_actual_unidad) VALUES (:idEst, :comentarios, :eIngreso, :cEnt, :eActual)');
+	$stmt->execute([
+		':idEst' => $idEstatus,
+		':comentarios' => $_POST['comentarios_entCel'] ?? '',
+		':eIngreso' => '0',
+		':cEnt' => 0,
+		':eActual' => 1
+	]);
 
-	$query->prepare('INSERT INTO Telefonos VALUES(:idTel_t,:tipo_t,:marca_t,:modelo_t,:nro_t,:imei_t,:imeisim_t,:puk_t,:uAsig_t,:id_estatus_t)');
+	$stmt = $pdo->prepare('INSERT INTO Telefonos (id_telefono, tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, id_estatus) VALUES (:idTel, :tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :uAsig, :idEstatus)');
+	$stmt->execute([
+		':idTel' => $idTel,
+		':tipo' => $_POST['tipo_entCel'] ?? '',
+		':marca' => $_POST['marca_entCel'] ?? null,
+		':modelo' => $_POST['modelo_entCel'] ?? null,
+		':nro' => $_POST['numero_entCel'] ?? '',
+		':imei' => $_POST['imei_entCel'] ?? '',
+		':imeisim' => $_POST['imeiSim_entCel'] ?? '',
+		':puk' => $_POST['puk_entCel'] ?? '',
+		':uAsig' => $_POST['asignado_entCel'] ?? 'OTIC',
+		':idEstatus' => $idEstatus
+	]);
 
-	$query->bindParam(:idTel_t,$idTel);
-	$query->bindParam(:tipo_t,$_POST['tipo_entCel']);
-	if ($_POST['marca_entCel'])
-	$query->bindParam(:marca_t,$_POST['marca_entCel']);
-	if ($_POST['modelo_entCel'])
-	$query->bindParam(:modelo_t,$_POST['modelo_entCel']);
-	if ($_POST['numero_entCel'])
-	$query->bindParam(:nro_t,$_POST['numero_entCel']);
-	if ($_POST['imei_entCel'])
-	$query->bindParam(:imei_t,$_POST['imei_entCel']);
-	if ($_POST['imeiSim_entCel'])
-	$query->bindParam(:imeisim_t,$_POST['imeiSim_entCel']);
-	if ($_POST['puk_entCel'])
-	$query->bindParam(:puk_t,$_POST['puk_entCel']);
-	$query->bindParam(:uAsig_t,$_POST['asignado_entCel']);
-	$query->bindParam(:id_estatus_t,$idEstatus);
+	$stmt = $pdo->prepare('INSERT INTO Entradas (id_entrada, fecha_entrada, id_unidad_hardware, id_encargado, salida_pcp, fecha_salida_pcp, numero_orden, nom_responsable) VALUES (:idE, :fEntrada, :idUnidad, :idEncargado, :salPCP, :fSalPCP, :nOrden, :nomResp)');
+	$stmt->execute([
+		':idE' => $idE_t,
+		':fEntrada' => date('Y-m-d'),
+		':idUnidad' => $idTel,
+		':idEncargado' => 'OTIC',
+		':salPCP' => $_POST['pcp_entCel'] ?? null,
+		':fSalPCP' => $_POST['pcpFecha_entCel'] ?? null,
+		':nOrden' => $_POST['numero_orden'] ?? null,
+		':nomResp' => $_POST['representante_entCel'] ?? 'OTIC'
+	]);
 
-	$query->prepare('INSERT INTO Entradas id_entrada=:idE_t,fecha_entrada=:fEntrada_t,id_unidad_hardware=:idUnidad_t,salida_pcp=:salPCP_t,fecha_salida_pcp=:fSalPCP_t,numero_orden=:nOrden_t,nom_responsable=:nomResp_t)');
-	$query->bindParam(:idE_t,$idE_t);
-	$query->bindParam(:fEntrada_t,);
-	$query->bindParam(:idUnidad_t,$idTel);
-	$query->bindParam(:idEncargado_t,'OTIC');
-	if ($_POST['pcp_entCel'])
-	$query->bindParam(:salPCP_t,$_POST['pcp_entCel']);
-	if ($_POST['pcpFecha_entCel'])
-	$query->bindParam(:fSalPCP_t,$_POST['pcpFecha_entCel']);
-	$query->bindParam(:nOrden_t,);
-	$query->bindParam(:nomResp_t,'OTIC');
-
-	$query->execute();
-/*END*/
 ?>
