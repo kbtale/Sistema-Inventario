@@ -4,6 +4,7 @@
   import Card from './lib/Card.svelte';
   import Sidebar from './lib/Sidebar.svelte';
   import InventoryTable from './lib/InventoryTable.svelte';
+  import MobileInventoryTable from './lib/MobileInventoryTable.svelte';
   import EntryForm from './lib/EntryForm.svelte';
   import MobileEntryForm from './lib/MobileEntryForm.svelte';
   import SupportBoard from './lib/SupportBoard.svelte';
@@ -63,6 +64,16 @@
         </div>
         <InventoryTable />
       </Card>
+    {:else if view === "mobile"}
+      <header class="page-header">
+        <h1 class="main-title">Mobile Device Inventory</h1>
+        <div class="header-actions">
+          <button class="btn-primary" on:click={() => (view = "entry_mobile")}>
+            + Register Mobile
+          </button>
+        </div>
+      </header>
+      <MobileInventoryTable />
     {:else if view === "entry"}
       <header class="page-header">
         <h1 class="main-title">Register Hardware</h1>
