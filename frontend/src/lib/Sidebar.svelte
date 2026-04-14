@@ -14,6 +14,7 @@
     <button type="button" class="nav-item" class:active={view === 'mobile'} on:click={() => navigate('mobile')}>Mobile Devices</button>
     <div class="nav-group-title">Operations</div>
     <button type="button" class="nav-item" class:active={view === 'support_board'} on:click={() => navigate('support_board')}>Support Board</button>
+    <button type="button" class="nav-item" class:active={view === 'support_entry'} on:click={() => navigate('support_entry')}>Support Entry</button>
     <button type="button" class="nav-item" class:active={view === 'entry_hardware'} on:click={() => navigate('entry_hardware')}>New Hardware</button>
     <button type="button" class="nav-item" class:active={view === 'entry_mobile'} on:click={() => navigate('entry_mobile')}>New Mobile</button>
     <button type="button" class="nav-item" class:active={view === 'assignments'} on:click={() => navigate('assignments')}>Assignments</button>

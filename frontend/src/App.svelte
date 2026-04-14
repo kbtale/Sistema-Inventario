@@ -8,6 +8,7 @@
   import EntryForm from './lib/EntryForm.svelte';
   import MobileEntryForm from './lib/MobileEntryForm.svelte';
   import SupportBoard from './lib/SupportBoard.svelte';
+  import SupportEntryForm from './lib/SupportEntryForm.svelte';
   import AssignmentForm from './lib/AssignmentForm.svelte';
   import { api } from './lib/api';
 
@@ -110,6 +111,19 @@
         <p>Monitor and progress assets through the maintenance lifecycle.</p>
       </header>
       <SupportBoard />
+    {:else if view === "support_entry"}
+      <header class="page-header">
+        <h1 class="main-title">Maintenance Check-in</h1>
+        <p>Officially enter an asset into the maintenance cycle with a Work Order.</p>
+      </header>
+      <Card>
+        <SupportEntryForm />
+      </Card>
+      <div class="footer-actions">
+        <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+          Back to Dashboard
+        </button>
+      </div>
     {:else if view === "assignments"}
       <header class="page-header">
         <h1 class="main-title">Asset Assignment</h1>
