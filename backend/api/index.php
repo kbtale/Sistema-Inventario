@@ -124,6 +124,15 @@ switch ($request) {
         }
         break;
 
+    case '/entradas':
+        $stmt = $pdo->query('SELECT e.*, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware, u.nombre_usuario as encargado_nombre
+                            FROM Entradas e 
+                            LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware 
+                            LEFT JOIN Usuarios u ON e.id_encargado = u.id_usuario
+                            ORDER BY e.fecha_entrada DESC');
+        echo json_encode($stmt->fetchAll());
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $request]);
