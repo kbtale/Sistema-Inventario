@@ -4,6 +4,17 @@
 
   let assets = [];
   let loading = true;
+  let searchQuery = "";
+  let selectedType = "";
+
+  $: filteredAssets = assets.filter(asset => {
+    const searchString = `${asset.tipo_hardware} ${asset.marca_hardware} ${asset.modelo_hardware} ${asset.bienes_hardware} ${asset.usuario_hardware}`.toLowerCase();
+    const matchesSearch = searchString.includes(searchQuery.toLowerCase());
+    const matchesType = !selectedType || asset.tipo_hardware === selectedType;
+    return matchesSearch && matchesType;
+  });
+
+  $: types = [...new Set(assets.map(a => a.tipo_hardware))].filter(Boolean);
 
   onMount(async () => {
     try {
@@ -15,6 +26,20 @@
 </script>
 
 <div class="table-container">
+  <div class="table-filters">
+    <div class="search-box">
+      <input type="text" placeholder="Search by tag, user, or model..." bind:value={searchQuery} />
+    </div>
+    <div class="filter-box">
+      <select bind:value={selectedType}>
+        <option value="">All Categories</option>
+        {#each types as type}
+          <option value={type}>{type}</option>
+        {/each}
+      </select>
+    </div>
+  </div>
+
   <table class="inventory-table">
     <thead>
       <tr>
@@ -28,7 +53,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each assets as asset}
+      {#each filteredAssets as asset}
         <tr>
           <td class="bold">{asset.numero_orden || '-'}</td>
           <td>{asset.tipo_hardware || '-'}</td>
@@ -43,6 +68,8 @@
           <td colspan="7" class="empty-state">
             {#if loading}
               Loading assets...
+            {:else if searchQuery || selectedType}
+              No matching assets found for your search.
             {:else}
               No movements recorded yet.
             {/if}
@@ -57,6 +84,33 @@
   .table-container {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .table-filters {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .search-box {
+    flex-grow: 1;
+  }
+
+  .search-box input, .filter-box select {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    font-size: 13px;
+    font-family: inherit;
+    transition: var(--transition);
+    background: white;
+  }
+
+  .search-box input:focus, .filter-box select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(245, 103, 26, 0.1);
   }
 
   .inventory-table {
