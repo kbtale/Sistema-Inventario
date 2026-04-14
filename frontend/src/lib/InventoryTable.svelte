@@ -1,9 +1,17 @@
 <script>
-  export let assets = [
-    { id: 'ORD-001', type: 'Workstation', brand: 'Dell', model: 'Precision 3660', tag: 'BIT-00124', user: 'Admin OTIC', date: '2024-03-12' },
-    { id: 'ORD-002', type: 'Laptop', brand: 'Lenovo', model: 'ThinkPad T14', tag: 'BIT-00125', user: 'Soporte Técnico', date: '2024-03-14' },
-    { id: 'ORD-005', type: 'Mobile', brand: 'Samsung', model: 'Galaxy A54', tag: 'CEL-00042', user: 'Logística', date: '2024-03-15' }
-  ];
+  import { onMount } from 'svelte';
+  import { api } from './api';
+
+  let assets = [];
+  let loading = true;
+
+  onMount(async () => {
+    try {
+      assets = await api.getHardware();
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
 <div class="table-container">
@@ -12,7 +20,8 @@
       <tr>
         <th>ID / Order</th>
         <th>Type</th>
-        <th>Brand & Model</th>
+        <th>Brand</th>
+        <th>Model</th>
         <th>Asset Tag</th>
         <th>User</th>
         <th>Date</th>
@@ -21,12 +30,23 @@
     <tbody>
       {#each assets as asset}
         <tr>
-          <td class="id-col">{asset.id}</td>
-          <td>{asset.type}</td>
-          <td>{asset.brand} <span class="model-text">{asset.model}</span></td>
-          <td><span class="tag-badge">{asset.tag}</span></td>
-          <td>{asset.user}</td>
-          <td>{asset.date}</td>
+          <td class="bold">{asset.numero_orden || '-'}</td>
+          <td>{asset.tipo_hardware || '-'}</td>
+          <td>{asset.marca_hardware || '-'}</td>
+          <td>{asset.modelo_hardware || '-'}</td>
+          <td><span class="badge-secondary">{asset.bienes_hardware || '-'}</span></td>
+          <td>{asset.usuario_hardware || '-'}</td>
+          <td>{asset.fecha_entrada || '-'}</td>
+        </tr>
+      {:else}
+        <tr>
+          <td colspan="7" class="empty-state">
+            {#if loading}
+              Loading assets...
+            {:else}
+              No movements recorded yet.
+            {/if}
+          </td>
         </tr>
       {/each}
     </tbody>
