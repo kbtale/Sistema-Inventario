@@ -34,19 +34,18 @@
   /* Responsive Breakpoints */
   @media (max-width: 1024px) {
     .layout-wrapper {
-      grid-template-columns: 1fr;
-      margin: var(--space-lg) auto;
-      padding: 0 var(--space-md);
+      grid-template-columns: 80px 1fr;
+      margin: var(--space-md) auto;
+      padding: 0 var(--space-sm);
+      gap: var(--space-sm);
     }
 
     .sidebar {
       grid-column: span 1;
-      order: 2;
     }
 
     .main-content {
       grid-column: span 1;
-      order: 1;
     }
   }
 </style>
