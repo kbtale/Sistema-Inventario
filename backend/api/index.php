@@ -173,6 +173,57 @@ switch ($request) {
         }
         break;
 
+    case '/salidas':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $idEntrada = $data['id_entrada'] ?? null;
+            
+            try {
+                $pdo->beginTransaction();
+                
+                $stmt = $pdo->prepare('INSERT INTO Salidas (id_entrada, fecha_salida, nom_responsable, reporte, receptor) 
+                                      VALUES (:idEnt, :fecha, :nomResp, :reporte, :receptor)');
+                $stmt->execute([
+                    ':idEnt' => $idEntrada,
+                    ':fecha' => date('Y-m-d'),
+                    ':nomResp' => $data['nom_responsable'] ?? 'OTIC',
+                    ':reporte' => $data['reporte'] ?? '',
+                    ':receptor' => $data['receptor'] ?? ''
+                ]);
+                
+                $idSalida = $pdo->lastInsertId();
+                
+                $stmt = $pdo->prepare('SELECT id_hardware, id_unit_hardware FROM Entradas WHERE id_entrada = :id');
+                $stmt->execute([':id' => $idEntrada]);
+                $entry = $stmt->fetch();
+                
+                if ($entry) {
+                    $table = $entry['id_hardware'] ? 'Hardware' : 'Telefonos';
+                    $idCol = $entry['id_hardware'] ? 'id_hardware' : 'id_telefono';
+                    $assetId = $entry['id_hardware'] ?: $entry['id_unit_hardware'];
+                    
+                    $stmt = $pdo->prepare("UPDATE Estatus SET estado_actual_unidad = 1 
+                                          WHERE id_estatus = (SELECT id_estatus FROM $table WHERE $idCol = :id)");
+                    $stmt->execute([':id' => $assetId]);
+                }
+                
+                $pdo->commit();
+                echo json_encode(['success' => true, 'id_salida' => $idSalida]);
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                http_response_code(500);
+                echo json_encode(['error' => 'Support exit failed', 'details' => $e->getMessage()]);
+            }
+        } else {
+            $stmt = $pdo->query('SELECT s.*, e.fecha_entrada, e.numero_orden, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware 
+                                FROM Salidas s 
+                                LEFT JOIN Entradas e ON s.id_entrada = e.id_entrada 
+                                LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware 
+                                ORDER BY s.fecha_salida DESC');
+            echo json_encode($stmt->fetchAll());
+        }
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $request]);
