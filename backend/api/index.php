@@ -82,11 +82,46 @@ switch ($request) {
         break;
 
     case '/telefonos':
-        $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios 
-                            FROM Telefonos t 
-                            LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus 
-                            ORDER BY t.id_telefono DESC');
-        echo json_encode($stmt->fetchAll());
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            
+            try {
+                $pdo->beginTransaction();
+                
+                $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad) VALUES (:com, 1)');
+                $stmt->execute([':com' => $data['comentarios'] ?? 'Initial registration']);
+                $idEstatus = $pdo->lastInsertId();
+                
+                $stmt = $pdo->prepare('INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, id_estatus) 
+                                      VALUES (:tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :usuario, :idEstatus)');
+                $stmt->execute([
+                    ':tipo' => $data['tipo'] ?? '',
+                    ':marca' => $data['marca'] ?? null,
+                    ':modelo' => $data['modelo'] ?? null,
+                    ':nro' => $data['nro'] ?? '',
+                    ':imei' => $data['imei'] ?? '',
+                    ':imeisim' => $data['imeisim'] ?? '',
+                    ':puk' => $data['puk'] ?? '',
+                    ':usuario' => $data['usuario'] ?? 'OTIC',
+                    ':idEstatus' => $idEstatus
+                ]);
+                
+                $idTel = $pdo->lastInsertId();
+                $pdo->commit();
+                
+                echo json_encode(['success' => true, 'id' => $idTel]);
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                http_response_code(500);
+                echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]);
+            }
+        } else {
+            $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios 
+                                FROM Telefonos t 
+                                LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus 
+                                ORDER BY t.id_telefono DESC');
+            echo json_encode($stmt->fetchAll());
+        }
         break;
 
     default:
