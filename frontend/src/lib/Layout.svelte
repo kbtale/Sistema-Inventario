@@ -11,24 +11,25 @@
 <style>
   .layout-wrapper {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: var(--space-lg);
-    max-width: 1320px;
-    margin: var(--space-xxl) auto;
+    grid-template-columns: 280px 1fr;
+    gap: var(--space-xl);
+    max-width: 1440px;
+    margin: var(--space-xl) auto;
     padding: 0 var(--space-xl);
-    min-height: 100vh;
+    min-height: calc(100vh - var(--space-xxl));
+    transition: var(--transition);
   }
 
   /* Desktop Layout */
   .sidebar {
-    grid-column: span 4;
+    grid-column: span 1;
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
   }
 
   .main-content {
-    grid-column: span 8;
+    grid-column: span 1;
   }
 
   /* Responsive Breakpoints */
