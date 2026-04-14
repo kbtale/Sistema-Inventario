@@ -144,10 +144,6 @@
     gap: var(--space-xs);
   }
 
-  .field-group.full-width {
-    grid-column: span 2;
-  }
-
   label {
     font-size: 12px;
     font-weight: 600;

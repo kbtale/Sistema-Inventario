@@ -86,22 +86,24 @@
     background: var(--color-bg-accent);
   }
 
-  .id-col {
+  .bold {
     font-weight: 600;
     color: var(--color-dark);
   }
 
-  .model-text {
-    opacity: 0.6;
-    font-weight: 400;
-  }
-
-  .tag-badge {
-    background: #E5E7EB;
+  .badge-secondary {
+    background: rgba(0, 0, 0, 0.05);
     padding: 2px 8px;
     border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
     font-family: ui-monospace, monospace;
-    font-size: 12px;
-    font-weight: 500;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-xl);
+    opacity: 0.5;
+    font-style: italic;
   }
 </style>

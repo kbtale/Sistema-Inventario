@@ -9,14 +9,14 @@
 
 <nav class="sidebar-nav">
   <div class="nav-group">
-    <div class="nav-item" class:active={view === 'dashboard'} on:click={() => navigate('dashboard')}>Dashboard</div>
-    <div class="nav-item" class:active={view === 'inventory'} on:click={() => navigate('inventory')}>Hardware</div>
-    <div class="nav-item" class:active={view === 'mobile'} on:click={() => navigate('mobile')}>Mobile Devices</div>
+    <button type="button" class="nav-item" class:active={view === 'dashboard'} on:click={() => navigate('dashboard')}>Dashboard</button>
+    <button type="button" class="nav-item" class:active={view === 'inventory'} on:click={() => navigate('inventory')}>Hardware</button>
+    <button type="button" class="nav-item" class:active={view === 'mobile'} on:click={() => navigate('mobile')}>Mobile Devices</button>
     <div class="nav-group-title">Operations</div>
-    <div class="nav-item" class:active={view === 'entry_hardware'} on:click={() => navigate('entry_hardware')}>New Hardware</div>
-    <div class="nav-item" class:active={view === 'entry_mobile'} on:click={() => navigate('entry_mobile')}>New Mobile</div>
-    <div class="nav-item">Support Entry</div>
-    <div class="nav-item">Assignments</div>
+    <button type="button" class="nav-item" class:active={view === 'entry_hardware'} on:click={() => navigate('entry_hardware')}>New Hardware</button>
+    <button type="button" class="nav-item" class:active={view === 'entry_mobile'} on:click={() => navigate('entry_mobile')}>New Mobile</button>
+    <button type="button" class="nav-item">Support Entry</button>
+    <button type="button" class="nav-item">Assignments</button>
   </div>
 </nav>
 
