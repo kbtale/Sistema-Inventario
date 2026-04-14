@@ -7,6 +7,7 @@
   import EntryForm from './lib/EntryForm.svelte';
   import MobileEntryForm from './lib/MobileEntryForm.svelte';
   import SupportBoard from './lib/SupportBoard.svelte';
+  import AssignmentForm from './lib/AssignmentForm.svelte';
   import { api } from './lib/api';
 
   let view = 'dashboard';
@@ -98,6 +99,19 @@
         <p>Monitor and progress assets through the maintenance lifecycle.</p>
       </header>
       <SupportBoard />
+    {:else if view === "assignments"}
+      <header class="page-header">
+        <h1 class="main-title">Asset Assignment</h1>
+        <p>Link an available unit in stock to a specific user or department.</p>
+      </header>
+      <Card>
+        <AssignmentForm />
+      </Card>
+      <div class="footer-actions">
+        <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+          Back to Dashboard
+        </button>
+      </div>
     {/if}
   </div>
 </Layout>
