@@ -1,11 +1,23 @@
 <script>
+  import { onMount } from 'svelte';
   import Layout from './lib/Layout.svelte';
   import Card from './lib/Card.svelte';
   import Sidebar from './lib/Sidebar.svelte';
   import InventoryTable from './lib/InventoryTable.svelte';
   import EntryForm from './lib/EntryForm.svelte';
+  import { api } from './lib/api';
 
   let view = 'dashboard';
+  let metrics = { total_hardware: 0, total_telefonos: 0, in_support: 0, available_mobile: 0 };
+  let loading = true;
+
+  onMount(async () => {
+    try {
+      metrics = await api.getDashboard();
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
 <Layout>
@@ -23,15 +35,15 @@
       <div class="metrics-grid">
         <Card>
           <div class="metric-label">Registered Assets</div>
-          <div class="metric-value">642</div>
+          <div class="metric-value">{metrics.total_hardware + metrics.total_telefonos}</div>
         </Card>
         <Card>
           <div class="metric-label">In Support</div>
-          <div class="metric-value highlight">18</div>
+          <div class="metric-value highlight">{metrics.in_support}</div>
         </Card>
         <Card>
           <div class="metric-label">Available Mobile</div>
-          <div class="metric-value">42</div>
+          <div class="metric-value">{metrics.available_mobile}</div>
         </Card>
       </div>
 
