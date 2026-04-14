@@ -15,9 +15,9 @@ build/
 
 # OS files
 .DS_Store
+.env
 Thumbs.db
 
-# Design & Concept documentation (Local reference only)
 *.md
 !README.md
 

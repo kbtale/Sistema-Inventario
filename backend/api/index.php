@@ -184,6 +184,47 @@ switch ($resource) {
         }
         break;
 
+    case '/auth/login':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $username = $data['username'] ?? '';
+            $password = $data['password'] ?? '';
+            $secretKey = getenv('JWT_SECRET');
+
+            if (!$secretKey) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Server configuration error: Missing JWT_SECRET']);
+                exit;
+            }
+            $stmt = $pdo->prepare('SELECT id_login, password_hash, role FROM Usuarios_Login WHERE username = :user');
+            $stmt->execute([':user' => $username]);
+            $user = $stmt->fetch();
+
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
+                $payload = base64_encode(json_encode([
+                    'id' => $user['id_login'],
+                    'role' => $user['role'],
+                    'exp' => time() + (86400 * 7)
+                ]));
+                $signature = base64_encode(hash_hmac('sha256', "$header.$payload", $secretKey, true));
+                $token = "$header.$payload.$signature";
+
+                echo json_encode([
+                    'success' => true,
+                    'token' => $token,
+                    'user' => [
+                        'username' => $username,
+                        'role' => $user['role']
+                    ]
+                ]);
+            } else {
+                http_response_code(401);
+                echo json_encode(['error' => 'Invalid credentials']);
+            }
+        }
+        break;
+
     case '/support/active':
         $sql = "
             (SELECT h.id_hardware as id, 'hardware' as type, h.marca_hardware as marca, h.modelo_hardware as modelo, h.bienes_hardware as tag, e.id_entrada, e.fecha_entrada
