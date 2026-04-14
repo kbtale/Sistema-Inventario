@@ -125,12 +125,52 @@ switch ($request) {
         break;
 
     case '/entradas':
-        $stmt = $pdo->query('SELECT e.*, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware, u.nombre_usuario as encargado_nombre
-                            FROM Entradas e 
-                            LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware 
-                            LEFT JOIN Usuarios u ON e.id_encargado = u.id_usuario
-                            ORDER BY e.fecha_entrada DESC');
-        echo json_encode($stmt->fetchAll());
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $assetId = $data['asset_id'] ?? null;
+            $assetType = $data['asset_type'] ?? 'hardware'; // hardware o telefonos
+            
+            try {
+                $pdo->beginTransaction();
+                
+                $idHard = ($assetType === 'hardware') ? $assetId : null;
+                $idUnit = ($assetType === 'telefonos') ? $assetId : null;
+
+                $stmt = $pdo->prepare('INSERT INTO Entradas (fecha_entrada, id_hardware, id_unit_hardware, numero_orden, nom_responsable, id_encargado) 
+                                      VALUES (:fecha, :idHard, :idUnit, :nOrden, :nomResp, :idEnc)');
+                $stmt->execute([
+                    ':fecha' => date('Y-m-d'),
+                    ':idHard' => $idHard,
+                    ':idUnit' => $idUnit,
+                    ':nOrden' => $data['numero_orden'] ?? null,
+                    ':nomResp' => $data['nom_responsable'] ?? 'OTIC',
+                    ':idEnc' => $data['id_encargado'] ?? null
+                ]);
+                
+                $idEntrada = $pdo->lastInsertId();
+                
+                $table = ($assetType === 'hardware') ? 'Hardware' : 'Telefonos';
+                $idCol = ($assetType === 'hardware') ? 'id_hardware' : 'id_telefono';
+                
+                $stmt = $pdo->prepare("UPDATE Estatus SET estado_actual_unidad = 2 
+                                      WHERE id_estatus = (SELECT id_estatus FROM $table WHERE $idCol = :id)");
+                $stmt->execute([':id' => $assetId]);
+                
+                $pdo->commit();
+                echo json_encode(['success' => true, 'id_entrada' => $idEntrada]);
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                http_response_code(500);
+                echo json_encode(['error' => 'Support entry failed', 'details' => $e->getMessage()]);
+            }
+        } else {
+            $stmt = $pdo->query('SELECT e.*, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware, u.nombre_usuario as encargado_nombre
+                                FROM Entradas e 
+                                LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware 
+                                LEFT JOIN Usuarios u ON e.id_encargado = u.id_usuario
+                                ORDER BY e.fecha_entrada DESC');
+            echo json_encode($stmt->fetchAll());
+        }
         break;
 
     default:
