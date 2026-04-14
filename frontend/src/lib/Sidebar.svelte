@@ -1,10 +1,21 @@
+<script>
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
+  
+  export let view = 'dashboard';
+
+  const navigate = (v) => dispatch('navigate', v);
+</script>
+
 <nav class="sidebar-nav">
   <div class="nav-group">
-    <div class="nav-item active">Hardware</div>
-    <div class="nav-item">Mobile Devices</div>
+    <div class="nav-item" class:active={view === 'dashboard'} on:click={() => navigate('dashboard')}>Dashboard</div>
+    <div class="nav-item" class:active={view === 'inventory'} on:click={() => navigate('inventory')}>Hardware</div>
+    <div class="nav-item" class:active={view === 'mobile'} on:click={() => navigate('mobile')}>Mobile Devices</div>
     <div class="nav-group-title">Operations</div>
+    <div class="nav-item" class:active={view === 'entry_hardware'} on:click={() => navigate('entry_hardware')}>New Hardware</div>
+    <div class="nav-item" class:active={view === 'entry_mobile'} on:click={() => navigate('entry_mobile')}>New Mobile</div>
     <div class="nav-item">Support Entry</div>
-    <div class="nav-item">Unit Salida</div>
     <div class="nav-item">Assignments</div>
   </div>
 </nav>

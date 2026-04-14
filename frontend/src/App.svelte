@@ -5,6 +5,7 @@
   import Sidebar from './lib/Sidebar.svelte';
   import InventoryTable from './lib/InventoryTable.svelte';
   import EntryForm from './lib/EntryForm.svelte';
+  import MobileEntryForm from './lib/MobileEntryForm.svelte';
   import { api } from './lib/api';
 
   let view = 'dashboard';
@@ -18,11 +19,15 @@
       loading = false;
     }
   });
+
+  const handleNavigate = (e) => {
+    view = e.detail;
+  };
 </script>
 
 <Layout>
   <div slot="sidebar">
-    <Sidebar />
+    <Sidebar {view} on:navigate={handleNavigate} />
   </div>
 
   <div slot="content">
@@ -50,16 +55,16 @@
       <Card>
         <div class="card-header">
           <h2>Recent Movements</h2>
-          <button class="btn-primary" on:click={() => view = 'entry'}>
-            New Entry
+          <button class="btn-primary" on:click={() => (view = "entry")}>
+            New Hardware
           </button>
         </div>
         <InventoryTable />
       </Card>
-    {:else if view === 'entry'}
+    {:else if view === "entry"}
       <header class="page-header">
-        <h1 class="main-title">Register New Asset</h1>
-        <p>Fill in the details to add hardware to the database</p>
+        <h1 class="main-title">Register Hardware</h1>
+        <p>Add a new device or workstation to the central registry.</p>
       </header>
 
       <Card>
@@ -67,7 +72,22 @@
       </Card>
 
       <div class="footer-actions">
-        <button class="btn-ghost" on:click={() => view = 'dashboard'}>
+        <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+          Back to Dashboard
+        </button>
+      </div>
+    {:else if view === "entry_mobile"}
+      <header class="page-header">
+        <h1 class="main-title">Mobile Registration</h1>
+        <p>Register a new Smartphone, Tablet, or SIM card.</p>
+      </header>
+
+      <Card>
+        <MobileEntryForm />
+      </Card>
+
+      <div class="footer-actions">
+        <button class="btn-ghost" on:click={() => (view = "dashboard")}>
           Back to Dashboard
         </button>
       </div>
