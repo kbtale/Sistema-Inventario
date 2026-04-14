@@ -9,6 +9,7 @@
   import MobileEntryForm from './lib/MobileEntryForm.svelte';
   import SupportBoard from './lib/SupportBoard.svelte';
   import SupportEntryForm from './lib/SupportEntryForm.svelte';
+  import SupportExitForm from './lib/SupportExitForm.svelte';
   import AssignmentForm from './lib/AssignmentForm.svelte';
   import { api } from './lib/api';
 
@@ -118,6 +119,19 @@
       </header>
       <Card>
         <SupportEntryForm />
+      </Card>
+      <div class="footer-actions">
+        <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+          Back to Dashboard
+        </button>
+      </div>
+    {:else if view === "support_exit"}
+      <header class="page-header">
+        <h1 class="main-title">Maintenance Release</h1>
+        <p>Finalize technical service and return the asset to the available pool.</p>
+      </header>
+      <Card>
+        <SupportExitForm />
       </Card>
       <div class="footer-actions">
         <button class="btn-ghost" on:click={() => (view = "dashboard")}>

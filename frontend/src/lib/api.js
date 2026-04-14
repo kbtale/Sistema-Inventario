@@ -37,6 +37,7 @@ export const api = {
   getTelefonos: () => apiFetch('/telefonos'),
   getEntradas: () => apiFetch('/entradas'),
   getSalidas: () => apiFetch('/salidas'),
+  getActiveSupport: () => apiFetch('/support/active'),
 
   // POST/PUT methods
   registerHardware: (data) => apiFetch('/hardware', {
@@ -47,11 +48,11 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  createEntry: (data) => apiFetch('/entradas', {
+  supportEntry: (data) => apiFetch('/entradas', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  createExit: (data) => apiFetch('/salidas', {
+  supportExit: (data) => apiFetch('/salidas', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
