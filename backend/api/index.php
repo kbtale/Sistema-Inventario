@@ -148,6 +148,42 @@ switch ($resource) {
         }
         break;
 
+    case '/usuarios':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $assetId = $data['asset_id'] ?? null;
+            $assetType = $data['asset_type'] ?? 'hardware';
+            $ci = $data['ci'] ?? '';
+            
+            try {
+                $pdo->beginTransaction();
+                
+                $stmt = $pdo->prepare('SELECT id_usuario FROM Usuarios WHERE ci_usuario = :ci');
+                $stmt->execute([':ci' => $ci]);
+                $idUser = $stmt->fetchColumn();
+                
+                if (!$idUser) {
+                    $stmt = $pdo->prepare('INSERT INTO Usuarios (nombre_usuario, apellido_usuario, ci_usuario) VALUES (:nom, :ape, :ci)');
+                    $stmt->execute([':nom' => $data['nombre'] ?? '', ':ape' => $data['apellido'] ?? '', ':ci' => $ci]);
+                    $idUser = $pdo->lastInsertId();
+                }
+                
+                $userName = ($data['nombre'] ?? '') . ' ' . ($data['apellido'] ?? '');
+                
+                if ($assetType === 'hardware') {
+                    $stmt = $pdo->prepare('UPDATE Hardware SET usuario_hardware = :user WHERE id_hardware = :id');
+                    $stmt->execute([':user' => $userName, ':id' => $assetId]);
+                } else {
+                    $stmt = $pdo->prepare('UPDATE Telefonos SET usuario_asignado = :user WHERE id_telefono = :id');
+                    $stmt->execute([':user' => $userName, ':id' => $assetId]);
+                }
+                
+                $pdo->commit();
+                echo json_encode(['success' => true, 'id_usuario' => $idUser]);
+            } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Assignment failed', 'details' => $e->getMessage()]); }
+        }
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Endpoint not found', 'path' => $resource]);
