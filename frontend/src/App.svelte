@@ -6,6 +6,7 @@
   import InventoryTable from './lib/InventoryTable.svelte';
   import EntryForm from './lib/EntryForm.svelte';
   import MobileEntryForm from './lib/MobileEntryForm.svelte';
+  import SupportBoard from './lib/SupportBoard.svelte';
   import { api } from './lib/api';
 
   let view = 'dashboard';
@@ -91,6 +92,12 @@
           Back to Dashboard
         </button>
       </div>
+    {:else if view === "support_board"}
+      <header class="page-header">
+        <h1 class="main-title">Support Management</h1>
+        <p>Monitor and progress assets through the maintenance lifecycle.</p>
+      </header>
+      <SupportBoard />
     {/if}
   </div>
 </Layout>
