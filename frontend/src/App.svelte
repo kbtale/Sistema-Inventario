@@ -1,21 +1,26 @@
 <script>
-  import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import Layout from './lib/Layout.svelte';
-  import Card from './lib/Card.svelte';
-  import Sidebar from './lib/Sidebar.svelte';
-  import InventoryTable from './lib/InventoryTable.svelte';
-  import MobileInventoryTable from './lib/MobileInventoryTable.svelte';
-  import EntryForm from './lib/EntryForm.svelte';
-  import MobileEntryForm from './lib/MobileEntryForm.svelte';
-  import SupportBoard from './lib/SupportBoard.svelte';
-  import SupportEntryForm from './lib/SupportEntryForm.svelte';
-  import SupportExitForm from './lib/SupportExitForm.svelte';
-  import AssignmentForm from './lib/AssignmentForm.svelte';
-  import { api } from './lib/api';
+  import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
+  import Layout from "./lib/Layout.svelte";
+  import Card from "./lib/Card.svelte";
+  import Sidebar from "./lib/Sidebar.svelte";
+  import InventoryTable from "./lib/InventoryTable.svelte";
+  import MobileInventoryTable from "./lib/MobileInventoryTable.svelte";
+  import EntryForm from "./lib/EntryForm.svelte";
+  import MobileEntryForm from "./lib/MobileEntryForm.svelte";
+  import SupportBoard from "./lib/SupportBoard.svelte";
+  import SupportEntryForm from "./lib/SupportEntryForm.svelte";
+  import SupportExitForm from "./lib/SupportExitForm.svelte";
+  import AssignmentForm from "./lib/AssignmentForm.svelte";
+  import { api } from "./lib/api";
 
-  let view = 'dashboard';
-  let metrics = { total_hardware: 0, total_telefonos: 0, in_support: 0, available_mobile: 0 };
+  let view = "dashboard";
+  let metrics = {
+    total_hardware: 0,
+    total_telefonos: 0,
+    in_support: 0,
+    available_mobile: 0,
+  };
   let loading = true;
 
   onMount(refreshData);
@@ -33,7 +38,7 @@
 
   const handleNavigate = (e) => {
     view = e.detail;
-    if (['dashboard', 'mobile', 'support_board'].includes(view)) {
+    if (["dashboard", "mobile", "support_board"].includes(view)) {
       refreshData();
     }
   };
@@ -46,7 +51,7 @@
 
   <div slot="content">
     <div class="view-transition-container" in:fade={{ duration: 200 }}>
-      {#if view === 'dashboard'}
+      {#if view === "dashboard"}
         <header class="page-header">
           <h1 class="main-title">SIOTIC Dashboard</h1>
           <p>Real-time infrastructure overview and asset health.</p>
@@ -56,7 +61,9 @@
           <Card>
             <div class="metric-info">
               <span class="metric-label">Total Assets</span>
-              <div class="metric-value">{metrics.total_hardware + metrics.total_telefonos}</div>
+              <div class="metric-value">
+                {metrics.total_hardware + metrics.total_telefonos}
+              </div>
             </div>
           </Card>
           <Card>
@@ -86,7 +93,10 @@
         <header class="page-header">
           <h1 class="main-title">Mobile Device Inventory</h1>
           <div class="header-actions">
-            <button class="btn-primary" on:click={() => (view = "entry_mobile")}>
+            <button
+              class="btn-primary"
+              on:click={() => (view = "entry_mobile")}
+            >
               + Register Mobile
             </button>
           </div>
@@ -131,7 +141,10 @@
       {:else if view === "support_entry"}
         <header class="page-header">
           <h1 class="main-title">Maintenance Check-in</h1>
-          <p>Officially enter an asset into the maintenance cycle with a Work Order.</p>
+          <p>
+            Officially enter an asset into the maintenance cycle with a Work
+            Order.
+          </p>
         </header>
         <Card>
           <SupportEntryForm on:success={refreshData} />
@@ -144,7 +157,10 @@
       {:else if view === "support_exit"}
         <header class="page-header">
           <h1 class="main-title">Maintenance Release</h1>
-          <p>Finalize technical service and return the asset to the available pool.</p>
+          <p>
+            Finalize technical service and return the asset to the available
+            pool.
+          </p>
         </header>
         <Card>
           <SupportExitForm on:success={refreshData} />
@@ -157,7 +173,9 @@
       {:else if view === "assignments"}
         <header class="page-header">
           <h1 class="main-title">Asset Assignment</h1>
-          <p>Link an available unit in stock to a specific user or department.</p>
+          <p>
+            Link an available unit in stock to a specific user or department.
+          </p>
         </header>
         <Card>
           <AssignmentForm on:success={refreshData} />

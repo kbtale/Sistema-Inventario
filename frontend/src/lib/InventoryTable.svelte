@@ -23,6 +23,31 @@
       loading = false;
     }
   });
+
+  function downloadCSV() {
+    if (filteredAssets.length === 0) return;
+    
+    const headers = ["Order", "Type", "Brand", "Model", "Tag", "User", "Date"];
+    const rows = filteredAssets.map(asset => [
+      asset.numero_orden || "",
+      `"${asset.tipo_hardware || ""}"`,
+      `"${asset.marca_hardware || ""}"`,
+      `"${asset.modelo_hardware || ""}"`,
+      `"${asset.bienes_hardware || ""}"`,
+      `"${asset.usuario_hardware || ""}"`,
+      asset.fecha_entrada || ""
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `siotic_inventory_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 </script>
 
 <div class="table-container">
@@ -37,6 +62,11 @@
           <option value={type}>{type}</option>
         {/each}
       </select>
+    </div>
+    <div class="export-box">
+      <button class="btn-export" on:click={downloadCSV} disabled={filteredAssets.length === 0}>
+        Export CSV
+      </button>
     </div>
   </div>
 

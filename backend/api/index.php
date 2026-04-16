@@ -19,6 +19,46 @@ $parts = explode('/', trim(explode('?', $requestUri)[0], '/'));
 $resource = '/' . ($parts[0] ?? '');
 $id = $parts[1] ?? null;
 
+// middleware
+
+$publicRoutes = ['/', '/status', '/auth/login'];
+if (!in_array($resource, $publicRoutes)) {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    $secretKey = getenv('JWT_SECRET');
+
+    if (!$authHeader || strpos($authHeader, 'Bearer ') !== 0) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Authentication required']);
+        exit;
+    }
+
+    $token = substr($authHeader, 7);
+    $tokenParts = explode('.', $token);
+    
+    if (count($tokenParts) !== 3) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Malformed token']);
+        exit;
+    }
+
+    list($header, $payload, $signature) = $tokenParts;
+    $validSignature = base64_encode(hash_hmac('sha256', "$header.$payload", $secretKey, true));
+
+    if (!hash_equals($validSignature, $signature)) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Invalid signature']);
+        exit;
+    }
+
+    $data = json_decode(base64_decode($payload), true);
+    if (!$data || ($data['exp'] < time())) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Token expired']);
+        exit;
+    }
+}
+
 require_once __DIR__ . '/../src/conexiondb.php';
 
 switch ($resource) {
