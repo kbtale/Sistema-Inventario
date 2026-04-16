@@ -23,6 +23,32 @@
       loading = false;
     }
   });
+
+  function downloadCSV() {
+    if (filteredDevices.length === 0) return;
+    
+    const headers = ["Brand", "Model", "Number", "IMEI", "SIM/ICCID", "PUK", "User", "Status"];
+    const rows = filteredDevices.map(dev => [
+      `"${dev.marca_telefono || ""}"`,
+      `"${dev.modelo_telefono || ""}"`,
+      `"${dev.nro_telefono || ""}"`,
+      `"${dev.imei_telefono || ""}"`,
+      `"${dev.imeisim_telefono || ""}"`,
+      `"${dev.puk_telefono || ""}"`,
+      `"${dev.usuario_asignado || ""}"`,
+      dev.estado_actual_unidad == 1 ? "Available" : "Maintenance"
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `siotic_mobile_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 </script>
 
 <div class="table-container">
@@ -41,6 +67,14 @@
           <option value={brand}>{brand}</option>
         {/each}
       </select>
+    </div>
+    <div class="export-box">
+      <button class="btn-export" on:click={downloadCSV} disabled={filteredDevices.length === 0}>
+        Export CSV
+      </button>
+      <button class="btn-export btn-pdf" on:click={() => window.print()} disabled={filteredDevices.length === 0}>
+        Export PDF
+      </button>
     </div>
   </div>
 
