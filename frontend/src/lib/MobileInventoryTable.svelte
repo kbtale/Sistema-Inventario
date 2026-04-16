@@ -162,6 +162,47 @@
     box-shadow: 0 0 0 3px rgba(245, 103, 26, 0.1);
   }
 
+  .export-box {
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  .btn-export {
+    background: white;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--color-dark);
+    white-space: nowrap;
+  }
+
+  .btn-export:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: rgba(245, 103, 26, 0.05);
+  }
+
+  .btn-export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-pdf {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+  }
+
+  .btn-pdf:hover:not(:disabled) {
+    background: var(--color-primary);
+    filter: brightness(1.1);
+    color: white;
+  }
+
   .inventory-table {
     width: 100%;
     border-collapse: collapse;
@@ -209,6 +250,10 @@
     color: var(--color-primary);
   }
 
+  .white-space-nowrap {
+    white-space: nowrap;
+  }
+
   .mono {
     font-family: ui-monospace, monospace;
     font-size: 12px;
@@ -243,5 +288,37 @@
     padding: var(--space-xl);
     opacity: 0.5;
     font-style: italic;
+  }
+
+  @media print {
+    body .sidebar, 
+    body .page-header p, 
+    body .table-filters, 
+    body .btn-primary, 
+    body .footer-actions {
+      display: none;
+    }
+    
+    body .layout-wrapper {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    body .table-container {
+      overflow: visible;
+    }
+
+    .inventory-table {
+      font-size: 10px;
+    }
+
+    th, td {
+      padding: 4px var(--space-sm);
+    }
+
+    @page {
+      margin: 1cm;
+    }
   }
 </style>

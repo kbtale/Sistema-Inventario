@@ -236,18 +236,22 @@
   }
 
   @media print {
-    :global(.sidebar), :global(.page-header p), .table-filters, :global(.btn-primary), :global(.footer-actions) {
-      display: none !important;
+    body .sidebar, 
+    body .page-header p, 
+    body .table-filters, 
+    body .btn-primary, 
+    body .footer-actions {
+      display: none;
     }
     
-    :global(.layout-wrapper) {
-      display: block !important;
-      margin: 0 !important;
-      padding: 0 !important;
+    body .layout-wrapper {
+      display: block;
+      margin: 0;
+      padding: 0;
     }
 
-    .table-container {
-      overflow: visible !important;
+    body .table-container {
+      overflow: visible;
     }
 
     .inventory-table {
@@ -255,7 +259,7 @@
     }
 
     th, td {
-      padding: 4px var(--space-sm) !important;
+      padding: 4px var(--space-sm);
     }
 
     @page {
