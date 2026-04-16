@@ -67,6 +67,9 @@
       <button class="btn-export" on:click={downloadCSV} disabled={filteredAssets.length === 0}>
         Export CSV
       </button>
+      <button class="btn-export btn-pdf" on:click={() => window.print()} disabled={filteredAssets.length === 0}>
+        Export PDF
+      </button>
     </div>
   </div>
 
@@ -143,6 +146,47 @@
     box-shadow: 0 0 0 3px rgba(245, 103, 26, 0.1);
   }
 
+  .export-box {
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  .btn-export {
+    background: white;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--color-dark);
+    white-space: nowrap;
+  }
+
+  .btn-export:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: rgba(245, 103, 26, 0.05);
+  }
+
+  .btn-export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-pdf {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+  }
+
+  .btn-pdf:hover:not(:disabled) {
+    background: var(--color-primary);
+    filter: brightness(1.1);
+    color: white;
+  }
+
   .inventory-table {
     width: 100%;
     border-collapse: collapse;
@@ -189,5 +233,33 @@
     padding: var(--space-xl);
     opacity: 0.5;
     font-style: italic;
+  }
+
+  @media print {
+    :global(.sidebar), :global(.page-header p), .table-filters, :global(.btn-primary), :global(.footer-actions) {
+      display: none !important;
+    }
+    
+    :global(.layout-wrapper) {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .table-container {
+      overflow: visible !important;
+    }
+
+    .inventory-table {
+      font-size: 10px;
+    }
+
+    th, td {
+      padding: 4px var(--space-sm) !important;
+    }
+
+    @page {
+      margin: 1cm;
+    }
   }
 </style>
