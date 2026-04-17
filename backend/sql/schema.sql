@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS Telefonos (
     imeisim_telefono VARCHAR(255),
     puk_telefono VARCHAR(255),
     usuario_asignado VARCHAR(255),
+    fecha_ingreso DATE,
     id_estatus INT,
     id_sede INT,
     qr_code VARCHAR(255),

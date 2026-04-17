@@ -96,7 +96,12 @@ switch ($resource) {
                 echo json_encode(['success' => true, 'id' => $idHard]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]); }
         } else {
-            $stmt = $pdo->query('SELECT h.*, e.estado_actual_unidad, e.fallas, e.comentarios, e.pulse_score, s.nombre_sede FROM Hardware h LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus LEFT JOIN Sedes s ON h.id_sede = s.id_sede ORDER BY h.id_hardware DESC');
+            $stmt = $pdo->query('SELECT h.*, e.estado_actual_unidad, e.fallas, e.comentarios, s.nombre_sede,
+                COALESCE(e.pulse_score, (100 - (TIMESTAMPDIFF(YEAR, h.fecha_ingreso, CURDATE()) * 5) - (SELECT COUNT(*) FROM Entradas ent WHERE ent.id_hardware = h.id_hardware) * 10)) as pulse_score
+                FROM Hardware h 
+                LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus 
+                LEFT JOIN Sedes s ON h.id_sede = s.id_sede 
+                ORDER BY h.id_hardware DESC');
             echo json_encode($stmt->fetchAll());
         }
         break;
@@ -109,14 +114,19 @@ switch ($resource) {
                 $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad, pulse_score) VALUES (:com, 1, 100)');
                 $stmt->execute([':com' => $data['comentarios'] ?? 'Initial registration']);
                 $idEstatus = $pdo->lastInsertId();
-                $stmt = $pdo->prepare('INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, id_estatus, id_sede, qr_code) VALUES (:tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :usuario, :idEstatus, :idSede, :qrCode)');
-                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':nro' => $data['nro'] ?? '', ':imei' => $data['imei'] ?? '', ':imeisim' => $data['imeisim'] ?? '', ':puk' => $data['puk'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':idEstatus' => $idEstatus, ':idSede' => $data['id_sede'] ?? null, ':qrCode' => $data['qr_code'] ?? null]);
+                $stmt = $pdo->prepare('INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, fecha_ingreso, id_estatus, id_sede, qr_code) VALUES (:tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :usuario, :fIngreso, :idEstatus, :idSede, :qrCode)');
+                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':nro' => $data['nro'] ?? '', ':imei' => $data['imei'] ?? '', ':imeisim' => $data['imeisim'] ?? '', ':puk' => $data['puk'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':fIngreso' => $data['fecha_ingreso'] ?? date('Y-m-d'), ':idEstatus' => $idEstatus, ':idSede' => $data['id_sede'] ?? null, ':qrCode' => $data['qr_code'] ?? null]);
                 $idTel = $pdo->lastInsertId();
                 $pdo->commit();
                 echo json_encode(['success' => true, 'id' => $idTel]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]); }
         } else {
-            $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios, e.pulse_score, s.nombre_sede FROM Telefonos t LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus LEFT JOIN Sedes s ON t.id_sede = s.id_sede ORDER BY t.id_telefono DESC');
+            $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios, s.nombre_sede,
+                COALESCE(e.pulse_score, (100 - (TIMESTAMPDIFF(YEAR, t.fecha_ingreso, CURDATE()) * 5) - (SELECT COUNT(*) FROM Entradas ent WHERE ent.id_unit_hardware = t.id_telefono) * 10)) as pulse_score
+                FROM Telefonos t 
+                LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus 
+                LEFT JOIN Sedes s ON t.id_sede = s.id_sede 
+                ORDER BY t.id_telefono DESC');
             echo json_encode($stmt->fetchAll());
         }
         break;
