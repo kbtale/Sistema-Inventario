@@ -71,6 +71,7 @@ export const api = {
   getSalidas: () => apiFetch('/salidas'),
   getActiveSupport: () => apiFetch('/support/active'),
   getTimeline: (type, id) => apiFetch(`/timeline?type=${type}&id=${id}`),
+  getSedeDistribution: () => apiFetch('/sedes/distribution'),
 
   // POST/PUT methods
   registerHardware: (data) => apiFetch('/hardware', {
