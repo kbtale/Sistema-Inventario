@@ -1,13 +1,27 @@
 CREATE DATABASE IF NOT EXISTS siotic;
 USE siotic;
 
+CREATE TABLE IF NOT EXISTS Municipios (
+    id_municipio INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_municipio VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Sedes (
+    id_sede INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_sede VARCHAR(255) NOT NULL,
+    id_municipio INT,
+    direccion TEXT,
+    FOREIGN KEY (id_municipio) REFERENCES Municipios(id_municipio) ON DELETE SET NULL
+);
+
 CREATE TABLE IF NOT EXISTS Estatus (
     id_estatus INT AUTO_INCREMENT PRIMARY KEY,
     comentarios TEXT,
     estado_ingreso VARCHAR(255),
     c_ent INT DEFAULT 0,
     estado_actual_unidad INT DEFAULT 1,
-    fallas TEXT
+    fallas TEXT,
+    pulse_score INT DEFAULT 100
 );
 
 CREATE TABLE IF NOT EXISTS Hardware (
@@ -19,8 +33,12 @@ CREATE TABLE IF NOT EXISTS Hardware (
     usuario_hardware VARCHAR(255),
     fecha_ingreso DATE,
     id_estatus INT,
+    id_sede INT,
+    qr_code VARCHAR(255),
     INDEX (id_estatus),
-    FOREIGN KEY (id_estatus) REFERENCES Estatus(id_estatus) ON DELETE SET NULL
+    INDEX (id_sede),
+    FOREIGN KEY (id_estatus) REFERENCES Estatus(id_estatus) ON DELETE SET NULL,
+    FOREIGN KEY (id_sede) REFERENCES Sedes(id_sede) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS Telefonos (
@@ -34,8 +52,12 @@ CREATE TABLE IF NOT EXISTS Telefonos (
     puk_telefono VARCHAR(255),
     usuario_asignado VARCHAR(255),
     id_estatus INT,
+    id_sede INT,
+    qr_code VARCHAR(255),
     INDEX (id_estatus),
-    FOREIGN KEY (id_estatus) REFERENCES Estatus(id_estatus) ON DELETE SET NULL
+    INDEX (id_sede),
+    FOREIGN KEY (id_estatus) REFERENCES Estatus(id_estatus) ON DELETE SET NULL,
+    FOREIGN KEY (id_sede) REFERENCES Sedes(id_sede) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS Usuarios (
@@ -51,13 +73,17 @@ CREATE TABLE IF NOT EXISTS Entradas (
     id_hardware INT,
     id_unit_hardware INT,
     id_encargado INT,
+    id_sede INT,
     salida_pcp VARCHAR(255),
     fecha_salida_pcp DATE,
     numero_orden VARCHAR(255),
     nom_responsable VARCHAR(255),
+    foto_url VARCHAR(255),
     INDEX (id_hardware),
     INDEX (id_encargado),
-    FOREIGN KEY (id_hardware) REFERENCES Hardware(id_hardware) ON DELETE CASCADE
+    INDEX (id_sede),
+    FOREIGN KEY (id_hardware) REFERENCES Hardware(id_hardware) ON DELETE CASCADE,
+    FOREIGN KEY (id_sede) REFERENCES Sedes(id_sede) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS Salidas (
