@@ -12,8 +12,10 @@
   import SupportEntryForm from "./lib/SupportEntryForm.svelte";
   import SupportExitForm from "./lib/SupportExitForm.svelte";
   import AssignmentForm from "./lib/AssignmentForm.svelte";
+  import Login from "./lib/Login.svelte";
   import { api } from "./lib/api";
 
+  let isLoggedIn = api.isAuthenticated();
   let view = "dashboard";
   let metrics = {
     total_hardware: 0,
@@ -23,9 +25,12 @@
   };
   let loading = true;
 
-  onMount(refreshData);
+  onMount(() => {
+    if (isLoggedIn) refreshData();
+  });
 
   async function refreshData() {
+    if (!isLoggedIn) return;
     loading = true;
     try {
       metrics = await api.getDashboard();
@@ -42,14 +47,22 @@
       refreshData();
     }
   };
+
+  const handleLoginSuccess = () => {
+    isLoggedIn = true;
+    refreshData();
+  };
 </script>
 
-<Layout>
-  <div slot="sidebar">
-    <Sidebar {view} on:navigate={handleNavigate} />
-  </div>
+{#if !isLoggedIn}
+  <Login on:login={handleLoginSuccess} />
+{:else}
+  <Layout>
+    <div slot="sidebar">
+      <Sidebar {view} on:navigate={handleNavigate} />
+    </div>
 
-  <div slot="content">
+    <div slot="content">
     <div class="view-transition-container" in:fade={{ duration: 200 }}>
       {#if view === "dashboard"}
         <header class="page-header">

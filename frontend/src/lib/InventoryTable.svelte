@@ -236,21 +236,21 @@
   }
 
   @media print {
-    body .sidebar, 
-    body .page-header p, 
-    body .table-filters, 
-    body .btn-primary, 
-    body .footer-actions {
+    :global(body .sidebar), 
+    :global(body .page-header p), 
+    :global(body .table-filters), 
+    :global(body .btn-primary), 
+    :global(body .footer-actions) {
       display: none;
     }
     
-    body .layout-wrapper {
+    :global(body .layout-wrapper) {
       display: block;
       margin: 0;
       padding: 0;
     }
 
-    body .table-container {
+    :global(body .table-container) {
       overflow: visible;
     }
 
