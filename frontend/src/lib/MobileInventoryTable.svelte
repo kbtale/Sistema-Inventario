@@ -291,20 +291,6 @@
   }
 
   @media print {
-    :global(body .sidebar), 
-    :global(body .page-header p), 
-    :global(body .table-filters), 
-    :global(body .btn-primary), 
-    :global(body .footer-actions) {
-      display: none;
-    }
-    
-    :global(body .layout-wrapper) {
-      display: block;
-      margin: 0;
-      padding: 0;
-    }
-
     :global(body .table-container) {
       overflow: visible;
     }
@@ -315,10 +301,6 @@
 
     th, td {
       padding: 4px var(--space-sm);
-    }
-
-    @page {
-      margin: 1cm;
     }
   }
 </style>

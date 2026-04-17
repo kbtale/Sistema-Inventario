@@ -77,3 +77,22 @@ a {
 * {
   box-sizing: border-box;
 }
+
+@media print {
+  .sidebar, 
+  .page-header p, 
+  .btn-primary, 
+  .footer-actions {
+    display: none;
+  }
+  
+  .layout-wrapper {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  @page {
+    margin: 1cm;
+  }
+}
