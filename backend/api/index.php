@@ -86,17 +86,17 @@ switch ($resource) {
             $data = json_decode(file_get_contents('php://input'), true);
             try {
                 $pdo->beginTransaction();
-                $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad) VALUES (:com, 1)');
+                $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad, pulse_score) VALUES (:com, 1, 100)');
                 $stmt->execute([':com' => $data['comentarios'] ?? 'Initial registration']);
                 $idEstatus = $pdo->lastInsertId();
-                $stmt = $pdo->prepare('INSERT INTO Hardware (tipo_hardware, marca_hardware, modelo_hardware, bienes_hardware, usuario_hardware, fecha_ingreso, id_estatus) VALUES (:tipo, :marca, :modelo, :bienes, :usuario, :fIngreso, :idEstatus)');
-                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':bienes' => $data['bienes'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':fIngreso' => $data['fecha_ingreso'] ?? date('Y-m-d'), ':idEstatus' => $idEstatus]);
+                $stmt = $pdo->prepare('INSERT INTO Hardware (tipo_hardware, marca_hardware, modelo_hardware, bienes_hardware, usuario_hardware, fecha_ingreso, id_estatus, id_sede, qr_code) VALUES (:tipo, :marca, :modelo, :bienes, :usuario, :fIngreso, :idEstatus, :idSede, :qrCode)');
+                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':bienes' => $data['bienes'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':fIngreso' => $data['fecha_ingreso'] ?? date('Y-m-d'), ':idEstatus' => $idEstatus, ':idSede' => $data['id_sede'] ?? null, ':qrCode' => $data['qr_code'] ?? null]);
                 $idHard = $pdo->lastInsertId();
                 $pdo->commit();
                 echo json_encode(['success' => true, 'id' => $idHard]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]); }
         } else {
-            $stmt = $pdo->query('SELECT e.*, h.tipo_hardware, h.marca_hardware, h.modelo_hardware, h.bienes_hardware, h.usuario_hardware FROM Entradas e LEFT JOIN Hardware h ON e.id_hardware = h.id_hardware ORDER BY e.fecha_entrada DESC');
+            $stmt = $pdo->query('SELECT h.*, e.estado_actual_unidad, e.fallas, e.comentarios, e.pulse_score, s.nombre_sede FROM Hardware h LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus LEFT JOIN Sedes s ON h.id_sede = s.id_sede ORDER BY h.id_hardware DESC');
             echo json_encode($stmt->fetchAll());
         }
         break;
@@ -106,17 +106,17 @@ switch ($resource) {
             $data = json_decode(file_get_contents('php://input'), true);
             try {
                 $pdo->beginTransaction();
-                $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad) VALUES (:com, 1)');
+                $stmt = $pdo->prepare('INSERT INTO Estatus (comentarios, estado_actual_unidad, pulse_score) VALUES (:com, 1, 100)');
                 $stmt->execute([':com' => $data['comentarios'] ?? 'Initial registration']);
                 $idEstatus = $pdo->lastInsertId();
-                $stmt = $pdo->prepare('INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, id_estatus) VALUES (:tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :usuario, :idEstatus)');
-                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':nro' => $data['nro'] ?? '', ':imei' => $data['imei'] ?? '', ':imeisim' => $data['imeisim'] ?? '', ':puk' => $data['puk'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':idEstatus' => $idEstatus]);
+                $stmt = $pdo->prepare('INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telefono, imei_telefono, imeisim_telefono, puk_telefono, usuario_asignado, id_estatus, id_sede, qr_code) VALUES (:tipo, :marca, :modelo, :nro, :imei, :imeisim, :puk, :usuario, :idEstatus, :idSede, :qrCode)');
+                $stmt->execute([':tipo' => $data['tipo'] ?? '', ':marca' => $data['marca'] ?? null, ':modelo' => $data['modelo'] ?? null, ':nro' => $data['nro'] ?? '', ':imei' => $data['imei'] ?? '', ':imeisim' => $data['imeisim'] ?? '', ':puk' => $data['puk'] ?? '', ':usuario' => $data['usuario'] ?? 'OTIC', ':idEstatus' => $idEstatus, ':idSede' => $data['id_sede'] ?? null, ':qrCode' => $data['qr_code'] ?? null]);
                 $idTel = $pdo->lastInsertId();
                 $pdo->commit();
                 echo json_encode(['success' => true, 'id' => $idTel]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]); }
         } else {
-            $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios FROM Telefonos t LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus ORDER BY t.id_telefono DESC');
+            $stmt = $pdo->query('SELECT t.*, e.estado_actual_unidad, e.fallas, e.comentarios, e.pulse_score, s.nombre_sede FROM Telefonos t LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus LEFT JOIN Sedes s ON t.id_sede = s.id_sede ORDER BY t.id_telefono DESC');
             echo json_encode($stmt->fetchAll());
         }
         break;
