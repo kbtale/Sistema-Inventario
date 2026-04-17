@@ -2,11 +2,20 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import PulseIndicator from "./PulseIndicator.svelte";
+  import Timeline from "./Timeline.svelte";
 
   let devices = [];
   let loading = true;
   let searchQuery = "";
   let selectedBrand = "";
+
+  let selectedDevice = null;
+  let isTimelineOpen = false;
+
+  function openTimeline(dev) {
+    selectedDevice = dev;
+    isTimelineOpen = true;
+  }
 
   $: filteredDevices = devices.filter((dev) => {
     const searchString =
@@ -113,6 +122,7 @@
         <th>PUK</th>
         <th>Assigned User</th>
         <th>Status</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -129,9 +139,7 @@
           </td>
           <td><span class="number-cell">{dev.nro_telefono || "-"}</span></td>
           <td><span class="mono">{dev.imei_telefono || "-"}</span></td>
-          <td
-            ><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td
-          >
+          <td><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td>
           <td><span class="puk-badge">{dev.puk_telefono || "****"}</span></td>
           <td>{dev.usuario_asignado || "Unassigned"}</td>
           <td>
@@ -142,10 +150,15 @@
               {dev.estado_actual_unidad == 1 ? "Available" : "Maintenance"}
             </span>
           </td>
+          <td>
+            <button class="btn-action" on:click={() => openTimeline(dev)}>
+              History
+            </button>
+          </td>
         </tr>
       {:else}
         <tr>
-          <td colspan="7" class="empty-state">
+          <td colspan="9" class="empty-state">
             {#if loading}
               Loading mobile devices...
             {:else if searchQuery || selectedBrand}
@@ -158,6 +171,14 @@
       {/each}
     </tbody>
   </table>
+
+  <Timeline 
+    isOpen={isTimelineOpen} 
+    assetId={selectedDevice?.id_telefono} 
+    assetType="mobile"
+    assetName={selectedDevice?.marca_telefono}
+    on:close={() => (isTimelineOpen = false)}
+  />
 </div>
 
 <style>
@@ -314,6 +335,23 @@
   .status-badge.available {
     background: #d1fae5;
     color: #10b981;
+  }
+
+  .btn-action {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-action:hover {
+    background: var(--color-primary);
+    color: white;
   }
 
   .empty-state {

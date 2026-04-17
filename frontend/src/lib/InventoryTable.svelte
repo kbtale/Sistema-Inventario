@@ -2,11 +2,20 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import PulseIndicator from "./PulseIndicator.svelte";
+  import Timeline from "./Timeline.svelte";
 
   let assets = [];
   let loading = true;
   let searchQuery = "";
   let selectedType = "";
+
+  let selectedAsset = null;
+  let isTimelineOpen = false;
+
+  function openTimeline(asset) {
+    selectedAsset = asset;
+    isTimelineOpen = true;
+  }
 
   $: filteredAssets = assets.filter((asset) => {
     const searchString =
@@ -101,6 +110,7 @@
         <th>Asset Tag</th>
         <th>User</th>
         <th>Date</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -117,10 +127,15 @@
           >
           <td>{asset.usuario_hardware || "-"}</td>
           <td>{asset.fecha_entrada || "-"}</td>
+          <td>
+            <button class="btn-action" on:click={() => openTimeline(asset)}>
+              History
+            </button>
+          </td>
         </tr>
       {:else}
         <tr>
-          <td colspan="7" class="empty-state">
+          <td colspan="9" class="empty-state">
             {#if loading}
               Loading assets...
             {:else if searchQuery || selectedType}
@@ -133,6 +148,14 @@
       {/each}
     </tbody>
   </table>
+
+  <Timeline 
+    isOpen={isTimelineOpen} 
+    assetId={selectedAsset?.id_hardware} 
+    assetType="hardware"
+    assetName={selectedAsset?.tipo_hardware}
+    on:close={() => (isTimelineOpen = false)}
+  />
 </div>
 
 <style>
@@ -250,6 +273,23 @@
     font-size: 11px;
     font-weight: 600;
     font-family: ui-monospace, monospace;
+  }
+
+  .btn-action {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-action:hover {
+    background: var(--color-primary);
+    color: white;
   }
 
   .empty-state {
