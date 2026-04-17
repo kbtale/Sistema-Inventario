@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { api } from './api';
+  import PulseIndicator from "./PulseIndicator.svelte";
 
   let assets = [];
   let loading = true;
@@ -76,6 +77,7 @@
   <table class="inventory-table">
     <thead>
       <tr>
+        <th>Health</th>
         <th>ID / Order</th>
         <th>Type</th>
         <th>Brand</th>
@@ -88,6 +90,7 @@
     <tbody>
       {#each filteredAssets as asset}
         <tr>
+          <td><PulseIndicator score={asset.pulse_score} size="sm" /></td>
           <td class="bold">{asset.numero_orden || '-'}</td>
           <td>{asset.tipo_hardware || '-'}</td>
           <td>{asset.marca_hardware || '-'}</td>

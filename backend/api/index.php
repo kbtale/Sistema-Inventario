@@ -96,11 +96,14 @@ switch ($resource) {
                 echo json_encode(['success' => true, 'id' => $idHard]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Registration failed', 'details' => $e->getMessage()]); }
         } else {
-            $stmt = $pdo->query('SELECT h.*, e.estado_actual_unidad, e.fallas, e.comentarios, s.nombre_sede,
-                COALESCE(e.pulse_score, (100 - (TIMESTAMPDIFF(YEAR, h.fecha_ingreso, CURDATE()) * 5) - (SELECT COUNT(*) FROM Entradas ent WHERE ent.id_hardware = h.id_hardware) * 10)) as pulse_score
+            // Calculate dynamic pulse and join with last entry/sede info
+            $stmt = $pdo->query('SELECT h.*, e.estado_actual_unidad, e.fallas, e.comentarios, s.nombre_sede, 
+                ent.numero_orden, ent.fecha_entrada,
+                COALESCE(e.pulse_score, (100 - (TIMESTAMPDIFF(YEAR, h.fecha_ingreso, CURDATE()) * 5) - (SELECT COUNT(*) FROM Entradas repairs WHERE repairs.id_hardware = h.id_hardware) * 10)) as pulse_score
                 FROM Hardware h 
                 LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus 
                 LEFT JOIN Sedes s ON h.id_sede = s.id_sede 
+                LEFT JOIN (SELECT id_hardware, MAX(fecha_entrada) as fecha_entrada, numero_orden FROM Entradas GROUP BY id_hardware) ent ON h.id_hardware = ent.id_hardware
                 ORDER BY h.id_hardware DESC');
             echo json_encode($stmt->fetchAll());
         }
