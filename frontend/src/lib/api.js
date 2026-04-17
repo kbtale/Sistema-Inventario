@@ -7,16 +7,27 @@ const BASE_URL = 'http://localhost:8080/api';
  */
 async function apiFetch(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('siotic_token');
   
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
+
+  if (token) {
+    defaultHeaders['Authorization'] = `Bearer ${token}`;
+  }
 
   try {
     const response = await fetch(url, {
       ...options,
       headers: { ...defaultHeaders, ...options.headers }
     });
+
+    if (response.status === 401 && endpoint !== '/auth/login') {
+      api.logout();
+      window.location.reload();
+      throw new Error('Session expired');
+    }
 
     if (!response.ok) {
       const error = await response.json();
@@ -31,6 +42,27 @@ async function apiFetch(endpoint, options = {}) {
 }
 
 export const api = {
+  // Auth
+  login: async (username, password) => {
+    const res = await apiFetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password })
+    });
+    if (res.token) {
+      localStorage.setItem('siotic_token', res.token);
+      localStorage.setItem('siotic_user', JSON.stringify(res.user));
+    }
+    return res;
+  },
+
+  logout: () => {
+    localStorage.removeItem('siotic_token');
+    localStorage.removeItem('siotic_user');
+  },
+
+  isAuthenticated: () => !!localStorage.getItem('siotic_token'),
+  getUser: () => JSON.parse(localStorage.getItem('siotic_user') || 'null'),
+
   // GET methods
   getDashboard: () => apiFetch('/dashboard'),
   getHardware: () => apiFetch('/hardware'),
