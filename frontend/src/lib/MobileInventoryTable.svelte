@@ -9,13 +9,16 @@
   let selectedBrand = "";
 
   $: filteredDevices = devices.filter((dev) => {
-    const searchString = `${dev.marca_telefono} ${dev.modelo_telefono} ${dev.nro_telefono} ${dev.imei_telefono} ${dev.usuario_asignado}`.toLowerCase();
+    const searchString =
+      `${dev.marca_telefono} ${dev.modelo_telefono} ${dev.nro_telefono} ${dev.imei_telefono} ${dev.usuario_asignado}`.toLowerCase();
     const matchesSearch = searchString.includes(searchQuery.toLowerCase());
     const matchesBrand = !selectedBrand || dev.marca_telefono === selectedBrand;
     return matchesSearch && matchesBrand;
   });
 
-  $: brands = [...new Set(devices.map((d) => d.marca_telefono))].filter(Boolean);
+  $: brands = [...new Set(devices.map((d) => d.marca_telefono))].filter(
+    Boolean,
+  );
 
   onMount(async () => {
     try {
@@ -27,9 +30,18 @@
 
   function downloadCSV() {
     if (filteredDevices.length === 0) return;
-    
-    const headers = ["Brand", "Model", "Number", "IMEI", "SIM/ICCID", "PUK", "User", "Status"];
-    const rows = filteredDevices.map(dev => [
+
+    const headers = [
+      "Brand",
+      "Model",
+      "Number",
+      "IMEI",
+      "SIM/ICCID",
+      "PUK",
+      "User",
+      "Status",
+    ];
+    const rows = filteredDevices.map((dev) => [
       `"${dev.marca_telefono || ""}"`,
       `"${dev.modelo_telefono || ""}"`,
       `"${dev.nro_telefono || ""}"`,
@@ -37,15 +49,18 @@
       `"${dev.imeisim_telefono || ""}"`,
       `"${dev.puk_telefono || ""}"`,
       `"${dev.usuario_asignado || ""}"`,
-      dev.estado_actual_unidad == 1 ? "Available" : "Maintenance"
+      dev.estado_actual_unidad == 1 ? "Available" : "Maintenance",
     ]);
 
-    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `siotic_mobile_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `siotic_mobile_${new Date().toISOString().split("T")[0]}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -70,10 +85,18 @@
       </select>
     </div>
     <div class="export-box">
-      <button class="btn-export" on:click={downloadCSV} disabled={filteredDevices.length === 0}>
+      <button
+        class="btn-export"
+        on:click={downloadCSV}
+        disabled={filteredDevices.length === 0}
+      >
         Export CSV
       </button>
-      <button class="btn-export btn-pdf" on:click={() => window.print()} disabled={filteredDevices.length === 0}>
+      <button
+        class="btn-export btn-pdf"
+        on:click={() => window.print()}
+        disabled={filteredDevices.length === 0}
+      >
         Export PDF
       </button>
     </div>
@@ -106,11 +129,16 @@
           </td>
           <td><span class="number-cell">{dev.nro_telefono || "-"}</span></td>
           <td><span class="mono">{dev.imei_telefono || "-"}</span></td>
-          <td><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td>
+          <td
+            ><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td
+          >
           <td><span class="puk-badge">{dev.puk_telefono || "****"}</span></td>
           <td>{dev.usuario_asignado || "Unassigned"}</td>
           <td>
-            <span class="status-badge" class:available={dev.estado_actual_unidad == 1}>
+            <span
+              class="status-badge"
+              class:available={dev.estado_actual_unidad == 1}
+            >
               {dev.estado_actual_unidad == 1 ? "Available" : "Maintenance"}
             </span>
           </td>
@@ -304,7 +332,8 @@
       font-size: 10px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 4px var(--space-sm);
     }
   }

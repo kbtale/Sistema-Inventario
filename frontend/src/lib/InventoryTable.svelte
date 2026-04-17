@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from 'svelte';
-  import { api } from './api';
+  import { onMount } from "svelte";
+  import { api } from "./api";
   import PulseIndicator from "./PulseIndicator.svelte";
 
   let assets = [];
@@ -8,14 +8,15 @@
   let searchQuery = "";
   let selectedType = "";
 
-  $: filteredAssets = assets.filter(asset => {
-    const searchString = `${asset.tipo_hardware} ${asset.marca_hardware} ${asset.modelo_hardware} ${asset.bienes_hardware} ${asset.usuario_hardware}`.toLowerCase();
+  $: filteredAssets = assets.filter((asset) => {
+    const searchString =
+      `${asset.tipo_hardware} ${asset.marca_hardware} ${asset.modelo_hardware} ${asset.bienes_hardware} ${asset.usuario_hardware}`.toLowerCase();
     const matchesSearch = searchString.includes(searchQuery.toLowerCase());
     const matchesType = !selectedType || asset.tipo_hardware === selectedType;
     return matchesSearch && matchesType;
   });
 
-  $: types = [...new Set(assets.map(a => a.tipo_hardware))].filter(Boolean);
+  $: types = [...new Set(assets.map((a) => a.tipo_hardware))].filter(Boolean);
 
   onMount(async () => {
     try {
@@ -27,24 +28,27 @@
 
   function downloadCSV() {
     if (filteredAssets.length === 0) return;
-    
+
     const headers = ["Order", "Type", "Brand", "Model", "Tag", "User", "Date"];
-    const rows = filteredAssets.map(asset => [
+    const rows = filteredAssets.map((asset) => [
       asset.numero_orden || "",
       `"${asset.tipo_hardware || ""}"`,
       `"${asset.marca_hardware || ""}"`,
       `"${asset.modelo_hardware || ""}"`,
       `"${asset.bienes_hardware || ""}"`,
       `"${asset.usuario_hardware || ""}"`,
-      asset.fecha_entrada || ""
+      asset.fecha_entrada || "",
     ]);
 
-    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `siotic_inventory_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `siotic_inventory_${new Date().toISOString().split("T")[0]}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -54,7 +58,11 @@
 <div class="table-container">
   <div class="table-filters">
     <div class="search-box">
-      <input type="text" placeholder="Search by tag, user, or model..." bind:value={searchQuery} />
+      <input
+        type="text"
+        placeholder="Search by tag, user, or model..."
+        bind:value={searchQuery}
+      />
     </div>
     <div class="filter-box">
       <select bind:value={selectedType}>
@@ -65,10 +73,18 @@
       </select>
     </div>
     <div class="export-box">
-      <button class="btn-export" on:click={downloadCSV} disabled={filteredAssets.length === 0}>
+      <button
+        class="btn-export"
+        on:click={downloadCSV}
+        disabled={filteredAssets.length === 0}
+      >
         Export CSV
       </button>
-      <button class="btn-export btn-pdf" on:click={() => window.print()} disabled={filteredAssets.length === 0}>
+      <button
+        class="btn-export btn-pdf"
+        on:click={() => window.print()}
+        disabled={filteredAssets.length === 0}
+      >
         Export PDF
       </button>
     </div>
@@ -91,13 +107,16 @@
       {#each filteredAssets as asset}
         <tr>
           <td><PulseIndicator score={asset.pulse_score} size="sm" /></td>
-          <td class="bold">{asset.numero_orden || '-'}</td>
-          <td>{asset.tipo_hardware || '-'}</td>
-          <td>{asset.marca_hardware || '-'}</td>
-          <td>{asset.modelo_hardware || '-'}</td>
-          <td><span class="badge-secondary">{asset.bienes_hardware || '-'}</span></td>
-          <td>{asset.usuario_hardware || '-'}</td>
-          <td>{asset.fecha_entrada || '-'}</td>
+          <td class="bold">{asset.numero_orden || "-"}</td>
+          <td>{asset.tipo_hardware || "-"}</td>
+          <td>{asset.marca_hardware || "-"}</td>
+          <td>{asset.modelo_hardware || "-"}</td>
+          <td
+            ><span class="badge-secondary">{asset.bienes_hardware || "-"}</span
+            ></td
+          >
+          <td>{asset.usuario_hardware || "-"}</td>
+          <td>{asset.fecha_entrada || "-"}</td>
         </tr>
       {:else}
         <tr>
@@ -132,7 +151,8 @@
     flex-grow: 1;
   }
 
-  .search-box input, .filter-box select {
+  .search-box input,
+  .filter-box select {
     width: 100%;
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
@@ -143,7 +163,8 @@
     background: white;
   }
 
-  .search-box input:focus, .filter-box select:focus {
+  .search-box input:focus,
+  .filter-box select:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(245, 103, 26, 0.1);
@@ -247,7 +268,8 @@
       font-size: 10px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 4px var(--space-sm);
     }
   }

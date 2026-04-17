@@ -278,6 +278,24 @@ switch ($resource) {
         }
         break;
 
+    case '/support/active':
+        $sql = "
+            (SELECT h.id_hardware as id, 'hardware' as type, h.marca_hardware as marca, h.modelo_hardware as modelo, h.bienes_hardware as tag, e.id_entrada, e.fecha_entrada
+             FROM Hardware h 
+             JOIN Estatus s ON h.id_estatus = s.id_estatus 
+             JOIN Entradas e ON h.id_hardware = e.id_hardware 
+             WHERE s.estado_actual_unidad = 2)
+            UNION ALL
+            (SELECT t.id_telefono as id, 'telefonos' as type, t.marca_telefono as marca, t.modelo_telefono as modelo, t.nro_telefono as tag, e.id_entrada, e.fecha_entrada
+             FROM Telefonos t 
+             JOIN Estatus s ON t.id_estatus = s.id_estatus 
+             JOIN Entradas e ON t.id_unit_hardware = e.id_telefono
+             WHERE s.estado_actual_unidad = 2)
+        ";
+        $stmt = $pdo->query($sql);
+        echo json_encode($stmt->fetchAll());
+        break;
+
     case '/timeline':
         $type = $_GET['type'] ?? 'hardware';
         $id = $_GET['id'] ?? 0;
