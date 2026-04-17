@@ -19,11 +19,11 @@ INSERT INTO Municipios (id_municipio, nombre_municipio) VALUES
 (5, 'El Hatillo');
 
 -- 2. Sedes
-INSERT INTO Sedes (id_sede, nombre_sede, id_municipio, direccion) VALUES 
-(1, 'Sede Principal OTIC', 1, 'Av. Urdaneta, Edif. Central, Piso 4'),
-(2, 'Oficina Regional Chacao', 2, 'Av. Francisco de Miranda, Torre Kyra'),
-(3, 'Centro de Datos Baruta', 3, 'Calle La Guairita, Edif. Tecnológico'),
-(4, 'Almacén de Soporte Sucre', 4, 'Av. Rómulo Gallegos, Galpón 12');
+INSERT INTO Sedes (id_sede, nombre_sede, id_municipio, direccion, latitud, longitud) VALUES 
+(1, 'Sede Principal OTIC', 1, 'Av. Urdaneta, Edif. Central, Piso 4', 10.505, -66.914),
+(2, 'Oficina Regional Chacao', 2, 'Av. Francisco de Miranda, Torre Kyra', 10.491, -66.836),
+(3, 'Centro de Datos Baruta', 3, 'Calle La Guairita, Edif. Tecnológico', 10.433, -66.862),
+(4, 'Almacén de Soporte Sucre', 4, 'Av. Rómulo Gallegos, Galpón 12', 10.485, -66.762);
 
 -- 3. Usuarios de Staff (Technicians/Encargados)
 INSERT INTO Usuarios (id_usuario, nombre_usuario, apellido_usuario, ci_usuario) VALUES 

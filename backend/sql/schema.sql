@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS Sedes (
     nombre_sede VARCHAR(255) NOT NULL,
     id_municipio INT,
     direccion TEXT,
+    latitud DECIMAL(10, 8),
+    longitud DECIMAL(11, 8),
     FOREIGN KEY (id_municipio) REFERENCES Municipios(id_municipio) ON DELETE SET NULL
 );
 
