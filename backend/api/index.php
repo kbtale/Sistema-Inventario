@@ -296,6 +296,20 @@ switch ($resource) {
         echo json_encode($stmt->fetchAll());
         break;
 
+    case '/sedes/distribution':
+        $stmt = $pdo->query("
+            SELECT 
+                s.id_sede, 
+                s.nombre_sede as name, 
+                s.latitud as lat, 
+                s.longitud as lng,
+                (SELECT COUNT(*) FROM Hardware h WHERE h.id_sede = s.id_sede) as hardware_count,
+                (SELECT COUNT(*) FROM Telefonos t WHERE t.id_sede = s.id_sede) as mobile_count
+            FROM Sedes s
+        ");
+        echo json_encode($stmt->fetchAll());
+        break;
+
     case '/timeline':
         $type = $_GET['type'] ?? 'hardware';
         $id = $_GET['id'] ?? 0;
