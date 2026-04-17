@@ -296,6 +296,35 @@ switch ($resource) {
         echo json_encode($stmt->fetchAll());
         break;
 
+    case '/analytics/health':
+        $sql = "
+            SELECT 'hardware' as type, pulse_score, id_hardware as id FROM Hardware h LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus
+            UNION ALL
+            SELECT 'telefonos' as type, pulse_score, id_telefono as id FROM Telefonos t LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus
+        ";
+        $stmt = $pdo->query($sql);
+        $assets = $stmt->fetchAll();
+        
+        $distribution = ['healthy' => 0, 'at_risk' => 0, 'critical' => 0];
+        $critical_list = [];
+        
+        foreach ($assets as $asset) {
+            $score = $asset['pulse_score'] ?? 100;
+            if ($score >= 80) $distribution['healthy']++;
+            elseif ($score >= 50) $distribution['at_risk']++;
+            else {
+                $distribution['critical']++;
+                if (count($critical_list) < 5) $critical_list[] = $asset;
+            }
+        }
+        
+        echo json_encode([
+            'distribution' => $distribution,
+            'critical_assets' => $critical_list,
+            'total_analyzed' => count($assets)
+        ]);
+        break;
+
     case '/sedes/distribution':
         $stmt = $pdo->query("
             SELECT 
