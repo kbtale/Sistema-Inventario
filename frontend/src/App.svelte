@@ -13,6 +13,7 @@
   import SupportExitForm from "./lib/SupportExitForm.svelte";
   import AssignmentForm from "./lib/AssignmentForm.svelte";
   import Login from "./lib/Login.svelte";
+  import SedeMapper from "./lib/SedeMapper.svelte";
   import { api } from "./lib/api";
 
   let isLoggedIn = api.isAuthenticated();
@@ -24,6 +25,7 @@
     available_mobile: 0,
   };
   let loading = true;
+  let selectedSede = null;
 
   onMount(() => {
     if (isLoggedIn) refreshData();
@@ -40,6 +42,10 @@
       loading = false;
     }
   }
+
+  const handleSedeFilter = (e) => {
+    selectedSede = e.detail;
+  };
 
   const handleNavigate = (e) => {
     view = e.detail;
@@ -93,14 +99,24 @@
           </Card>
         </div>
 
+        <SedeMapper on:filter={handleSedeFilter} />
+
         <Card>
           <div class="card-header">
-            <h3>Recent Movements</h3>
+            <div class="header-titles">
+              <h3>Recent Movements</h3>
+              {#if selectedSede}
+                <div class="filter-badge" in:fade>
+                  Showing {selectedSede.name} 
+                  <button class="clear-filter" on:click={() => (selectedSede = null)}>&times;</button>
+                </div>
+              {/if}
+            </div>
             <button class="btn-primary" on:click={() => (view = "entry")}>
               + Register Hardware
             </button>
           </div>
-          <InventoryTable />
+          <InventoryTable filterSede={selectedSede?.id} />
         </Card>
       {:else if view === "mobile"}
         <header class="page-header">
@@ -252,6 +268,43 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--space-lg);
+  }
+
+  .header-titles {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .filter-badge {
+    background: rgba(245, 103, 26, 0.1);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .clear-filter {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
   }
 
   .card-header h3 {

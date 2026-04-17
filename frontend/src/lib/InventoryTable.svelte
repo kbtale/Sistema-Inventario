@@ -4,6 +4,8 @@
   import PulseIndicator from "./PulseIndicator.svelte";
   import Timeline from "./Timeline.svelte";
 
+  export let filterSede = null;
+
   let assets = [];
   let loading = true;
   let searchQuery = "";
@@ -22,7 +24,8 @@
       `${asset.tipo_hardware} ${asset.marca_hardware} ${asset.modelo_hardware} ${asset.bienes_hardware} ${asset.usuario_hardware}`.toLowerCase();
     const matchesSearch = searchString.includes(searchQuery.toLowerCase());
     const matchesType = !selectedType || asset.tipo_hardware === selectedType;
-    return matchesSearch && matchesType;
+    const matchesSede = !filterSede || asset.id_sede == filterSede;
+    return matchesSearch && matchesType && matchesSede;
   });
 
   $: types = [...new Set(assets.map((a) => a.tipo_hardware))].filter(Boolean);
