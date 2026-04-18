@@ -380,6 +380,56 @@ switch ($resource) {
         ]);
         break;
 
+    case '/analytics/forecast':
+        // 1. Get current available stock by type
+        $sql = "
+            SELECT tipo_hardware as category, COUNT(*) as current_stock 
+            FROM Hardware h JOIN Estatus e ON h.id_estatus = e.id_estatus
+            WHERE e.estado_actual_unidad = 1
+            GROUP BY tipo_hardware
+            UNION ALL
+            SELECT 'Mobile' as category, COUNT(*) as current_stock
+            FROM Telefonos t JOIN Estatus e ON t.id_estatus = e.id_estatus
+            WHERE e.estado_actual_unidad = 1
+        ";
+        $stmt = $pdo->query($sql);
+        $stock = $stmt->fetchAll();
+
+        // 2. Get attrition velocity (entries into support over last 6 months)
+        $sql = "
+            SELECT 
+                COALESCE(h.tipo_hardware, 'Mobile') as category,
+                COUNT(*) / 6 as monthly_velocity
+            FROM Entradas ent
+            LEFT JOIN Hardware h ON ent.id_hardware = h.id_hardware
+            WHERE ent.fecha_entrada >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+            GROUP BY category
+        ";
+        $velocityStmt = $pdo->query($sql);
+        $velocities = [];
+        foreach ($velocityStmt->fetchAll() as $v) {
+            $velocities[$v['category']] = (float)$v['monthly_velocity'];
+        }
+
+        // 3. Correlate and project
+        $forecast = [];
+        foreach ($stock as $s) {
+            $cat = $s['category'];
+            $vel = $velocities[$cat] ?? 0.1; // Default min velocity to avoid div by zero
+            $daysLeft = ($vel > 0) ? round(($s['current_stock'] / $vel) * 30) : 999;
+            
+            $forecast[] = [
+                'category' => $cat,
+                'available' => $s['current_stock'],
+                'velocity' => round($vel, 2),
+                'days_left' => $daysLeft,
+                'status' => ($daysLeft < 15) ? 'critical' : (($daysLeft < 45) ? 'warning' : 'healthy')
+            ];
+        }
+
+        echo json_encode($forecast);
+        break;
+
     case '/sedes/distribution':
         $stmt = $pdo->query("
             SELECT 
