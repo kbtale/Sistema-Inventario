@@ -391,6 +391,40 @@ switch ($resource) {
         ]);
         break;
 
+    case '/alerts':
+        $alerts = [];
+        
+        // 1. Critical Health Alerts (Pulse < 30)
+        $stmt = $pdo->query("
+            SELECT 'critical' as severity, 'Critical Component Health' as title, 
+                   CONCAT(tipo_hardware, ' ', marca_hardware, ' ', modelo_hardware) as description,
+                   'hardware' as type, id_hardware as asset_id
+            FROM Hardware h JOIN Estatus e ON h.id_estatus = e.id_estatus WHERE e.pulse_score < 30
+            UNION ALL
+            SELECT 'critical' as severity, 'Critical Mobile Health' as title, 
+                   CONCAT(marca_telefono, ' ', modelo_telefono) as description,
+                   'telefonos' as type, id_telefono as asset_id
+            FROM Telefonos t JOIN Estatus e ON t.id_estatus = e.id_estatus WHERE e.pulse_score < 30
+        ");
+        $healthAlerts = $stmt->fetchAll();
+        foreach ($healthAlerts as $a) $alerts[] = $a;
+
+        // 2. Stagnant Support Alerts (> 15 days in status 2)
+        $stmt = $pdo->query("
+            SELECT 'warning' as severity, 'Stagnant Support' as title, 
+                   CONCAT(h.tipo_hardware, ' stuck in repair for ', DATEDIFF(CURDATE(), ent.fecha_entrada), ' days') as description,
+                   'hardware' as type, h.id_hardware as asset_id
+            FROM Hardware h
+            JOIN Estatus s ON h.id_estatus = s.id_estatus
+            JOIN (SELECT id_hardware, MAX(fecha_entrada) as fecha_entrada FROM Entradas GROUP BY id_hardware) ent ON h.id_hardware = ent.id_hardware
+            WHERE s.estado_actual_unidad = 2 AND DATEDIFF(CURDATE(), ent.fecha_entrada) > 15
+        ");
+        $stagnantAlerts = $stmt->fetchAll();
+        foreach ($stagnantAlerts as $a) $alerts[] = $a;
+
+        echo json_encode($alerts);
+        break;
+
     case '/timeline':
         $type = $_GET['type'] ?? 'hardware';
         $id = $_GET['id'] ?? 0;
