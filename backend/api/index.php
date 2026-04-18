@@ -143,8 +143,8 @@ switch ($resource) {
                 $pdo->beginTransaction();
                 $idHard = ($assetType === 'hardware') ? $assetId : null;
                 $idUnit = ($assetType === 'telefonos') ? $assetId : null;
-                $stmt = $pdo->prepare('INSERT INTO Entradas (fecha_entrada, id_hardware, id_unit_hardware, numero_orden, nom_responsable, id_encargado) VALUES (:fecha, :idHard, :idUnit, :nOrden, :nomResp, :idEnc)');
-                $stmt->execute([':fecha' => date('Y-m-d'), ':idHard' => $idHard, ':idUnit' => $idUnit, ':nOrden' => $data['numero_orden'] ?? null, ':nomResp' => $data['nom_responsable'] ?? 'OTIC', ':idEnc' => $data['id_encargado'] ?? null]);
+                $stmt = $pdo->prepare('INSERT INTO Entradas (fecha_entrada, id_hardware, id_unit_hardware, numero_orden, nom_responsable, id_encargado, foto_url) VALUES (:fecha, :idHard, :idUnit, :nOrden, :nomResp, :idEnc, :foto)');
+                $stmt->execute([':fecha' => date('Y-m-d'), ':idHard' => $idHard, ':idUnit' => $idUnit, ':nOrden' => $data['numero_orden'] ?? null, ':nomResp' => $data['nom_responsable'] ?? 'OTIC', ':idEnc' => $data['id_encargado'] ?? null, ':foto' => $data['foto_url'] ?? null]);
                 $idEntrada = $pdo->lastInsertId();
                 $table = ($assetType === 'hardware') ? 'Hardware' : 'Telefonos';
                 $idCol = ($assetType === 'hardware') ? 'id_hardware' : 'id_telefono';
@@ -234,6 +234,9 @@ switch ($resource) {
                 $pdo->commit();
                 echo json_encode(['success' => true, 'id_usuario' => $idUser]);
             } catch (Exception $e) { $pdo->rollBack(); http_response_code(500); echo json_encode(['error' => 'Assignment failed', 'details' => $e->getMessage()]); }
+        } else {
+            $stmt = $pdo->query('SELECT id_usuario as id, CONCAT(nombre_usuario, " ", apellido_usuario) as name FROM Usuarios ORDER BY nombre_usuario ASC');
+            echo json_encode($stmt->fetchAll());
         }
         break;
 
@@ -274,6 +277,38 @@ switch ($resource) {
             } else {
                 http_response_code(401);
                 echo json_encode(['error' => 'Invalid credentials']);
+            }
+        }
+        break;
+
+    case '/upload':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_FILES['file'])) {
+                http_response_code(400);
+                echo json_encode(['error' => 'No file uploaded']);
+                exit;
+            }
+
+            $file = $_FILES['file'];
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+
+            if (!in_array($ext, $allowed)) {
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid file type']);
+                exit;
+            }
+
+            $newName = bin2hex(random_bytes(16)) . '.' . $ext;
+            $uploadDir = __DIR__ . '/../uploads/';
+            
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+            if (move_uploaded_file($file['tmp_name'], $uploadDir . $newName)) {
+                echo json_encode(['success' => true, 'url' => $newName]);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to save file']);
             }
         }
         break;

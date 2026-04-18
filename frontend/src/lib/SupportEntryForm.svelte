@@ -17,13 +17,27 @@
     id_encargado: "",
   };
 
+  let selectedFile = null;
+  let photoPreview = null;
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => (photoPreview = e.target.result);
+      reader.readAsDataURL(file);
+    }
+  }
+
   onMount(async () => {
     searching = true;
     try {
-      const [hardware, telefonos, entradas] = await Promise.all([
+      const [hardware, telefonos, entradas, staff] = await Promise.all([
         api.getHardware(),
         api.getTelefonos(),
         api.getEntradas(),
+        api.getUsuarios(),
       ]);
 
       const hAvailable = hardware
@@ -43,15 +57,7 @@
         }));
 
       availableAssets = [...hAvailable, ...tAvailable];
-
-      // Use the technicians from the entradas history as a quick list or fetch all Usuarios
-      // For now, let's assume all users in the Usuarios table can be technicians
-      // In a real app we'd have a specific technicains list
-      technicians = [
-        { id: 1, name: "Admin OTIC" },
-        { id: 2, name: "Soporte Técnico 1" },
-        { id: 3, name: "Coordinador PCP" },
-      ];
+      technicians = staff;
     } finally {
       searching = false;
     }
@@ -75,7 +81,17 @@
       const selected = availableAssets.find((a) => a.id == formData.asset_id);
       if (selected) formData.asset_type = selected.type;
 
-      const response = await api.supportEntry(formData);
+      // 1. Upload photo if present
+      let foto_url = null;
+      if (selectedFile) {
+        const uploadRes = await api.uploadPhoto(selectedFile);
+        if (uploadRes.success) {
+          foto_url = uploadRes.url;
+        }
+      }
+
+      // 2. Submit entry with foto_url
+      const response = await api.supportEntry({ ...formData, foto_url });
       if (response.success) {
         message = "Asset checked into support successfully!";
         formData = {
@@ -85,6 +101,8 @@
           nom_responsable: "OTIC Support",
           id_encargado: "",
         };
+        selectedFile = null;
+        photoPreview = null;
       }
     } catch (e) {
       error = e.message || "Failed to initiate support entry.";
@@ -141,14 +159,30 @@
       </select>
     </div>
 
-    <div class="field-group full-width">
-      <label for="e-resp">Responsibility Bearer</label>
       <input
         id="e-resp"
         type="text"
         placeholder="Department or Person in charge"
         bind:value={formData.nom_responsable}
       />
+    </div>
+
+    <div class="field-group full-width">
+      <label>Visual Auditing Proof</label>
+      <div class="photo-capture-box">
+        {#if photoPreview}
+          <div class="preview-container">
+            <img src={photoPreview} alt="Audit preview" />
+            <button class="btn-remove" on:click={() => { selectedFile = null; photoPreview = null; }}>&times;</button>
+          </div>
+        {:else}
+          <label class="camera-trigger">
+            <input type="file" accept="image/*" capture="environment" on:change={handleFileChange} />
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Capture Condition Photo</span>
+          </label>
+        {/if}
+      </div>
     </div>
 
     <div class="form-actions full-width">
@@ -275,6 +309,69 @@
 
   .btn-cancel:hover:not(:disabled) {
     background: rgba(0, 0, 0, 0.03);
+  }
+
+  .photo-capture-box {
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    background: #f9fafb;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+
+  .photo-capture-box:hover {
+    border-color: var(--color-primary);
+    background: rgba(245, 103, 26, 0.02);
+  }
+
+  .camera-trigger {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .camera-trigger input {
+    display: none;
+  }
+
+  .preview-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .preview-container img {
+    width: 100%;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: block;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--color-error);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
 
   @media (max-width: 640px) {

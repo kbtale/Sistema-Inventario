@@ -9,9 +9,11 @@ async function apiFetch(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
   const token = localStorage.getItem('siotic_token');
   
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-  };
+  const defaultHeaders = {};
+  
+  if (!(options.body instanceof FormData)) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`;
@@ -75,6 +77,7 @@ export const api = {
   getHealthAnalytics: () => apiFetch('/analytics/health'),
   getBudgetForecast: () => apiFetch('/analytics/budget'),
   getAlerts: () => apiFetch('/alerts'),
+  getUsuarios: () => apiFetch('/usuarios'),
 
   // POST/PUT methods
   registerHardware: (data) => apiFetch('/hardware', {
@@ -100,5 +103,14 @@ export const api = {
   assignUser: (data) => apiFetch('/usuarios', {
     method: 'POST',
     body: JSON.stringify(data)
-  })
+  }),
+
+  uploadPhoto: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch('/upload', {
+      method: 'POST',
+      body: formData
+    });
+  }
 };
