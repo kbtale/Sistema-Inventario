@@ -236,7 +236,11 @@
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        ><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z" /><path d="M6 10v4" /><path d="M10 12v2" /><path d="M14 8v6" /><path d="M18 11v3" /></svg
+        ><path
+          d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"
+        /><path d="M6 10v4" /><path d="M10 12v2" /><path d="M14 8v6" /><path
+          d="M18 11v3"
+        /></svg
       >
       <span class="nav-label">Health Analytics</span>
     </button>

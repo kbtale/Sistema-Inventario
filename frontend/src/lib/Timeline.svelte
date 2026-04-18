@@ -1,11 +1,11 @@
 <script>
-  import { onMount, createEventDispatcher } from 'svelte';
-  import { api } from './api';
-  import { fade, slide, fly } from 'svelte/transition';
+  import { onMount, createEventDispatcher } from "svelte";
+  import { api } from "./api";
+  import { fade, slide, fly } from "svelte/transition";
 
   export let assetId = null;
-  export let assetType = 'hardware'; // 'hardware' or 'mobile'
-  export let assetName = 'Asset';
+  export let assetType = "hardware"; // 'hardware' or 'mobile'
+  export let assetName = "Asset";
   export let isOpen = false;
 
   const dispatch = createEventDispatcher();
@@ -28,38 +28,42 @@
   }
 
   function close() {
-    dispatch('close');
+    dispatch("close");
   }
 
   function getIcon(type) {
     switch (type) {
-      case 'Birth': return '👶';
-      case 'Support Entry': return '🛠️';
-      case 'Support Exit': return '✅';
-      default: return '📍';
+      case "Birth":
+        return "👶";
+      case "Support Entry":
+        return "🛠️";
+      case "Support Exit":
+        return "✅";
+      default:
+        return "📍";
     }
   }
 
   function formatDate(dateStr) {
-    if (!dateStr) return 'Unknown Date';
-    return new Date(dateStr).toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    if (!dateStr) return "Unknown Date";
+    return new Date(dateStr).toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     });
   }
 
   function handleKeydown(e) {
-    if (e.key === 'Escape') close();
+    if (e.key === "Escape") close();
   }
 </script>
 
 {#if isOpen}
   <!-- Backdrop -->
-  <div 
-    class="backdrop" 
-    transition:fade 
-    on:click={close} 
+  <div
+    class="backdrop"
+    transition:fade
+    on:click={close}
     on:keydown={handleKeydown}
     role="button"
     tabindex="-1"
@@ -73,7 +77,9 @@
         <h3>Asset History</h3>
         <p>{assetName} • ID: {assetId}</p>
       </div>
-      <button class="btn-close" on:click={close} aria-label="Close panel">&times;</button>
+      <button class="btn-close" on:click={close} aria-label="Close panel"
+        >&times;</button
+      >
     </div>
 
     <div class="panel-content">
@@ -89,19 +95,56 @@
       {:else}
         <div class="timeline-container">
           <div class="timeline-line"></div>
-          
+
           {#each events as event, i}
             <div class="timeline-item" in:fly={{ y: 20, delay: i * 50 }}>
               <div class="timeline-node {event.color || 'bg-gray-500'}">
-                {#if event.type === 'Birth'}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 14 6-6"/></svg>
-                {:else if event.type === 'Support Entry'}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.79-2.79L14.7 6.3Z"/><path d="m20 10 2 2 2-2"/><path d="m10 22 9-9"/><path d="m15 18 4 4"/><path d="M3.5 15.5c.3-.3.8-.5 1.3-.5s1 .2 1.3.5l4 4c.3.3.5.8.5 1.3s-.2 1-.5 1.3L7 22l-5-5 1.5-1.5Z"/></svg>
+                {#if event.type === "Birth"}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><path d="m12 14 4-4" /><path
+                      d="M3.34 19a10 10 0 1 1 17.32 0"
+                    /><path d="m9.05 14 6-6" /></svg
+                  >
+                {:else if event.type === "Support Entry"}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><path
+                      d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.79-2.79L14.7 6.3Z"
+                    /><path d="m20 10 2 2 2-2" /><path d="m10 22 9-9" /><path
+                      d="m15 18 4 4"
+                    /><path
+                      d="M3.5 15.5c.3-.3.8-.5 1.3-.5s1 .2 1.3.5l4 4c.3.3.5.8.5 1.3s-.2 1-.5 1.3L7 22l-5-5 1.5-1.5Z"
+                    /></svg
+                  >
                 {:else}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg
+                  >
                 {/if}
               </div>
-              
+
               <div class="timeline-card">
                 <div class="card-header">
                   <span class="event-type">{event.type}</span>
@@ -110,7 +153,8 @@
                 <p class="event-details">{event.details}</p>
                 {#if event.actor}
                   <div class="event-actor">
-                    <span>Responsable:</span> {event.actor}
+                    <span>Responsable:</span>
+                    {event.actor}
                   </div>
                 {/if}
               </div>
@@ -236,9 +280,15 @@
     border: 2px solid #f3f4f6;
   }
 
-  .bg-emerald-500 { border-color: #10b981; }
-  .bg-amber-500 { border-color: #f59e0b; }
-  .bg-blue-500 { border-color: #3b82f6; }
+  .bg-emerald-500 {
+    border-color: #10b981;
+  }
+  .bg-amber-500 {
+    border-color: #f59e0b;
+  }
+  .bg-blue-500 {
+    border-color: #3b82f6;
+  }
 
   .timeline-card {
     background: white;
@@ -293,7 +343,8 @@
     font-weight: 600;
   }
 
-  .loading-state, .empty-state {
+  .loading-state,
+  .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -313,8 +364,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .panel-footer {

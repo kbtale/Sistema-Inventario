@@ -32,7 +32,7 @@
 
   onMount(() => {
     if (isLoggedIn) refreshData();
-    
+
     // Global polling for operational alerts every 2 minutes
     const interval = setInterval(() => {
       if (isLoggedIn && alertCenter) alertCenter.refresh();
@@ -91,165 +91,170 @@
       </div>
 
       <div class="view-transition-container" in:fade={{ duration: 200 }}>
-      {#if view === "dashboard"}
-        <header class="page-header">
-          <h1 class="main-title">SIOTIC Dashboard</h1>
-          <p>Real-time infrastructure overview and asset health.</p>
-        </header>
+        {#if view === "dashboard"}
+          <header class="page-header">
+            <h1 class="main-title">SIOTIC Dashboard</h1>
+            <p>Real-time infrastructure overview and asset health.</p>
+          </header>
 
-        <div class="metrics-grid">
-          <Card>
-            <div class="metric-info">
-              <span class="metric-label">Total Assets</span>
-              <div class="metric-value">
-                {metrics.total_hardware + metrics.total_telefonos}
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div class="metric-info">
-              <span class="metric-label">In Maintenance</span>
-              <div class="metric-value highlight">{metrics.in_support}</div>
-            </div>
-          </Card>
-          <Card>
-            <div class="metric-info">
-              <span class="metric-label">Available Mobile</span>
-              <div class="metric-value">{metrics.available_mobile}</div>
-            </div>
-          </Card>
-        </div>
-
-        <SedeMapper on:filter={handleSedeFilter} />
-
-        <Card>
-          <div class="card-header">
-            <div class="header-titles">
-              <h3>Recent Movements</h3>
-              {#if selectedSede}
-                <div class="filter-badge" in:fade>
-                  Showing {selectedSede.name} 
-                  <button class="clear-filter" on:click={() => (selectedSede = null)}>&times;</button>
+          <div class="metrics-grid">
+            <Card>
+              <div class="metric-info">
+                <span class="metric-label">Total Assets</span>
+                <div class="metric-value">
+                  {metrics.total_hardware + metrics.total_telefonos}
                 </div>
-              {/if}
+              </div>
+            </Card>
+            <Card>
+              <div class="metric-info">
+                <span class="metric-label">In Maintenance</span>
+                <div class="metric-value highlight">{metrics.in_support}</div>
+              </div>
+            </Card>
+            <Card>
+              <div class="metric-info">
+                <span class="metric-label">Available Mobile</span>
+                <div class="metric-value">{metrics.available_mobile}</div>
+              </div>
+            </Card>
+          </div>
+
+          <SedeMapper on:filter={handleSedeFilter} />
+
+          <Card>
+            <div class="card-header">
+              <div class="header-titles">
+                <h3>Recent Movements</h3>
+                {#if selectedSede}
+                  <div class="filter-badge" in:fade>
+                    Showing {selectedSede.name}
+                    <button
+                      class="clear-filter"
+                      on:click={() => (selectedSede = null)}>&times;</button
+                    >
+                  </div>
+                {/if}
+              </div>
+              <button class="btn-primary" on:click={() => (view = "entry")}>
+                + Register Hardware
+              </button>
             </div>
-            <button class="btn-primary" on:click={() => (view = "entry")}>
-              + Register Hardware
+            <InventoryTable filterSede={selectedSede?.id} />
+          </Card>
+        {:else if view === "mobile"}
+          <header class="page-header">
+            <h1 class="main-title">Mobile Device Inventory</h1>
+            <div class="header-actions">
+              <button
+                class="btn-primary"
+                on:click={() => (view = "entry_mobile")}
+              >
+                + Register Mobile
+              </button>
+            </div>
+          </header>
+          <MobileInventoryTable />
+        {:else if view === "entry"}
+          <header class="page-header">
+            <h1 class="main-title">Register Hardware</h1>
+            <p>Add a new device or workstation to the central registry.</p>
+          </header>
+
+          <Card>
+            <EntryForm on:success={refreshData} />
+          </Card>
+
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
             </button>
           </div>
-          <InventoryTable filterSede={selectedSede?.id} />
-        </Card>
-      {:else if view === "mobile"}
-        <header class="page-header">
-          <h1 class="main-title">Mobile Device Inventory</h1>
-          <div class="header-actions">
-            <button
-              class="btn-primary"
-              on:click={() => (view = "entry_mobile")}
-            >
-              + Register Mobile
+        {:else if view === "entry_mobile"}
+          <header class="page-header">
+            <h1 class="main-title">Mobile Registration</h1>
+            <p>Register a new Smartphone, Tablet, or SIM card.</p>
+          </header>
+
+          <Card>
+            <MobileEntryForm on:success={refreshData} />
+          </Card>
+
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
             </button>
           </div>
-        </header>
-        <MobileInventoryTable />
-      {:else if view === "entry"}
-        <header class="page-header">
-          <h1 class="main-title">Register Hardware</h1>
-          <p>Add a new device or workstation to the central registry.</p>
-        </header>
-
-        <Card>
-          <EntryForm on:success={refreshData} />
-        </Card>
-
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {:else if view === "entry_mobile"}
-        <header class="page-header">
-          <h1 class="main-title">Mobile Registration</h1>
-          <p>Register a new Smartphone, Tablet, or SIM card.</p>
-        </header>
-
-        <Card>
-          <MobileEntryForm on:success={refreshData} />
-        </Card>
-
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {:else if view === "support_board"}
-        <header class="page-header">
-          <h1 class="main-title">Support Management</h1>
-          <p>Monitor and progress assets through the maintenance lifecycle.</p>
-        </header>
-        <SupportBoard />
-      {:else if view === "support_entry"}
-        <header class="page-header">
-          <h1 class="main-title">Maintenance Check-in</h1>
-          <p>
-            Officially enter an asset into the maintenance cycle with a Work
-            Order.
-          </p>
-        </header>
-        <Card>
-          <SupportEntryForm on:success={refreshData} />
-        </Card>
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {:else if view === "support_exit"}
-        <header class="page-header">
-          <h1 class="main-title">Maintenance Release</h1>
-          <p>
-            Finalize technical service and return the asset to the available
-            pool.
-          </p>
-        </header>
-        <Card>
-          <SupportExitForm on:success={refreshData} />
-        </Card>
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {:else if view === "assignments"}
-        <header class="page-header">
-          <h1 class="main-title">Asset Assignment</h1>
-          <p>
-            Link an available unit in stock to a specific user or department.
-          </p>
-        </header>
-        <Card>
-          <AssignmentForm on:success={refreshData} />
-        </Card>
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {:else if view === "analytics"}
-        <header class="page-header">
-          <h1 class="main-title">Infrastructure Health Prediction</h1>
-          <p>Analyzing asset lifespan and maintenance risks.</p>
-        </header>
-        <HealthAnalytics />
-        <div class="footer-actions">
-          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
-            Back to Dashboard
-          </button>
-        </div>
-      {/if}
+        {:else if view === "support_board"}
+          <header class="page-header">
+            <h1 class="main-title">Support Management</h1>
+            <p>
+              Monitor and progress assets through the maintenance lifecycle.
+            </p>
+          </header>
+          <SupportBoard />
+        {:else if view === "support_entry"}
+          <header class="page-header">
+            <h1 class="main-title">Maintenance Check-in</h1>
+            <p>
+              Officially enter an asset into the maintenance cycle with a Work
+              Order.
+            </p>
+          </header>
+          <Card>
+            <SupportEntryForm on:success={refreshData} />
+          </Card>
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
+            </button>
+          </div>
+        {:else if view === "support_exit"}
+          <header class="page-header">
+            <h1 class="main-title">Maintenance Release</h1>
+            <p>
+              Finalize technical service and return the asset to the available
+              pool.
+            </p>
+          </header>
+          <Card>
+            <SupportExitForm on:success={refreshData} />
+          </Card>
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
+            </button>
+          </div>
+        {:else if view === "assignments"}
+          <header class="page-header">
+            <h1 class="main-title">Asset Assignment</h1>
+            <p>
+              Link an available unit in stock to a specific user or department.
+            </p>
+          </header>
+          <Card>
+            <AssignmentForm on:success={refreshData} />
+          </Card>
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
+            </button>
+          </div>
+        {:else if view === "analytics"}
+          <header class="page-header">
+            <h1 class="main-title">Infrastructure Health Prediction</h1>
+            <p>Analyzing asset lifespan and maintenance risks.</p>
+          </header>
+          <HealthAnalytics />
+          <div class="footer-actions">
+            <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+              Back to Dashboard
+            </button>
+          </div>
+        {/if}
+      </div>
     </div>
-  </div>
-</Layout>
+  </Layout>
 {/if}
 
 <style>

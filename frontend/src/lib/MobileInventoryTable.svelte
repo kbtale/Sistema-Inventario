@@ -139,7 +139,9 @@
           </td>
           <td><span class="number-cell">{dev.nro_telefono || "-"}</span></td>
           <td><span class="mono">{dev.imei_telefono || "-"}</span></td>
-          <td><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td>
+          <td
+            ><span class="mono subtext">{dev.imeisim_telefono || "-"}</span></td
+          >
           <td><span class="puk-badge">{dev.puk_telefono || "****"}</span></td>
           <td>{dev.usuario_asignado || "Unassigned"}</td>
           <td>
@@ -172,9 +174,9 @@
     </tbody>
   </table>
 
-  <Timeline 
-    isOpen={isTimelineOpen} 
-    assetId={selectedDevice?.id_telefono} 
+  <Timeline
+    isOpen={isTimelineOpen}
+    assetId={selectedDevice?.id_telefono}
     assetType="mobile"
     assetName={selectedDevice?.marca_telefono}
     on:close={() => (isTimelineOpen = false)}

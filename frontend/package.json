@@ -15,8 +15,10 @@
   },
   "dependencies": {
     "chart.js": "^4.5.1",
+    "html5-qrcode": "^2.3.8",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
+    "qrcode": "^1.5.4",
     "svelte-chartjs": "^4.0.1"
   }
 }

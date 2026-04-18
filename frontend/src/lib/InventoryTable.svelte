@@ -3,6 +3,7 @@
   import { api } from "./api";
   import PulseIndicator from "./PulseIndicator.svelte";
   import Timeline from "./Timeline.svelte";
+  import QRBadge from "./QRBadge.svelte";
 
   export let filterSede = null;
 
@@ -18,6 +19,8 @@
     selectedAsset = asset;
     isTimelineOpen = true;
   }
+
+  let showQRAsset = null;
 
   $: filteredAssets = assets.filter((asset) => {
     const searchString =
@@ -131,9 +134,18 @@
           <td>{asset.usuario_hardware || "-"}</td>
           <td>{asset.fecha_entrada || "-"}</td>
           <td>
-            <button class="btn-action" on:click={() => openTimeline(asset)}>
-              History
-            </button>
+            <div class="actions-group">
+              <button class="btn-action" on:click={() => openTimeline(asset)}>
+                History
+              </button>
+              <button 
+                class="btn-action btn-qr" 
+                on:click={() => (showQRAsset = asset)}
+                title="View QR Label"
+              >
+                QR
+              </button>
+            </div>
           </td>
         </tr>
       {:else}
@@ -152,13 +164,36 @@
     </tbody>
   </table>
 
-  <Timeline 
-    isOpen={isTimelineOpen} 
-    assetId={selectedAsset?.id_hardware} 
+  <Timeline
+    isOpen={isTimelineOpen}
+    assetId={selectedAsset?.id_hardware}
     assetType="hardware"
     assetName={selectedAsset?.tipo_hardware}
     on:close={() => (isTimelineOpen = false)}
   />
+
+  {#if showQRAsset}
+    <div 
+      class="modal-overlay" 
+      on:click={() => (showQRAsset = null)}
+      on:keydown={(e) => ["Enter", " ", "Escape"].includes(e.key) && (showQRAsset = null)}
+      role="button"
+      tabindex="0"
+    >
+      <div class="qr-modal card" on:click|stopPropagation role="presentation">
+        <div class="modal-header">
+          <h3>Asset Identifier</h3>
+          <button class="btn-close" on:click={() => (showQRAsset = null)}>&times;</button>
+        </div>
+        <QRBadge 
+          type="hardware" 
+          id={showQRAsset.id_hardware} 
+          label={`${showQRAsset.marca_hardware} ${showQRAsset.modelo_hardware}`}
+          size={200}
+        />
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -293,6 +328,68 @@
   .btn-action:hover {
     background: var(--color-primary);
     color: white;
+  }
+
+  .actions-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .btn-qr {
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+    opacity: 0.6;
+  }
+
+  .btn-qr:hover {
+    background: var(--color-dark);
+    color: white;
+    opacity: 1;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .qr-modal {
+    width: 300px;
+    padding: var(--space-xl);
+    text-align: center;
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.5;
   }
 
   .empty-state {
