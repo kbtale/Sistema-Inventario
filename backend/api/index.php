@@ -359,6 +359,38 @@ switch ($resource) {
         echo json_encode($stmt->fetchAll());
         break;
 
+    case '/analytics/budget':
+        $sql = "
+            SELECT 'hardware' as type, pulse_score, costo_estimado FROM Hardware h LEFT JOIN Estatus e ON h.id_estatus = e.id_estatus
+            UNION ALL
+            SELECT 'telefonos' as type, pulse_score, costo_estimado FROM Telefonos t LEFT JOIN Estatus e ON t.id_estatus = e.id_estatus
+        ";
+        $stmt = $pdo->query($sql);
+        $assets = $stmt->fetchAll();
+        
+        $quarters = [
+            'Q1 (Immediate)' => 0,
+            'Q2 (Critical)' => 0,
+            'Q3 (At Risk)' => 0,
+            'Q4 (Monitor)' => 0
+        ];
+        
+        foreach ($assets as $asset) {
+            $score = $asset['pulse_score'] ?? 100;
+            $cost = (float)($asset['costo_estimado'] ?? 0);
+            
+            if ($score < 25) $quarters['Q1 (Immediate)'] += $cost;
+            elseif ($score < 50) $quarters['Q2 (Critical)'] += $cost;
+            elseif ($score < 75) $quarters['Q3 (At Risk)'] += $cost;
+            else $quarters['Q4 (Monitor)'] += $cost;
+        }
+        
+        echo json_encode([
+            'quarters' => $quarters,
+            'total_forecast' => array_sum($quarters)
+        ]);
+        break;
+
     case '/timeline':
         $type = $_GET['type'] ?? 'hardware';
         $id = $_GET['id'] ?? 0;
