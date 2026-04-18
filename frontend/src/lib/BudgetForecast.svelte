@@ -96,13 +96,13 @@
               beginAtZero: true,
               ticks: {
                 callback: (value) => "$" + value.toLocaleString(),
-                font: { size: 11, weight: "600" },
+                font: { size: 11, weight: 600 },
               },
               grid: { color: "rgba(0,0,0,0.05)" },
             },
             x: {
               grid: { display: false },
-              ticks: { font: { size: 11, weight: "700" } },
+              ticks: { font: { size: 11, weight: 700 } },
             },
           },
         }}
