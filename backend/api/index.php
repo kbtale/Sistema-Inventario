@@ -307,9 +307,19 @@ switch ($resource) {
         
         $distribution = ['healthy' => 0, 'at_risk' => 0, 'critical' => 0];
         $critical_list = [];
+        $total_score = 0;
+        $total_count = count($assets);
         
+        // Dynamic Decay Rates: HW: 5%/yr, Mobile: 10%/yr. 
+        // We use a weighted avg for the projection
+        $hw_count = 0;
+        $mob_count = 0;
+
         foreach ($assets as $asset) {
             $score = $asset['pulse_score'] ?? 100;
+            $total_score += $score;
+            if ($asset['type'] === 'hardware') $hw_count++; else $mob_count++;
+
             if ($score >= 80) $distribution['healthy']++;
             elseif ($score >= 50) $distribution['at_risk']++;
             else {
@@ -318,10 +328,20 @@ switch ($resource) {
             }
         }
         
+        $avg_start = $total_count > 0 ? ($total_score / $total_count) : 100;
+        $avg_annual_decay = $total_count > 0 ? (($hw_count * 5) + ($mob_count * 10)) / $total_count : 5;
+        
+        $projections = [];
+        foreach ([0, 3, 6, 9, 12] as $month) {
+            $decay = ($avg_annual_decay * ($month / 12));
+            $projections[] = round(max(0, $avg_start - $decay), 1);
+        }
+        
         echo json_encode([
             'distribution' => $distribution,
             'critical_assets' => $critical_list,
-            'total_analyzed' => count($assets)
+            'total_analyzed' => $total_count,
+            'projections' => $projections
         ]);
         break;
 

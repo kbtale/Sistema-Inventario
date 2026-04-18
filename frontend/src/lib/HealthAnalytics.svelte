@@ -56,21 +56,23 @@
       }
     : null;
 
-  const lineData = {
-    labels: ["Month 0", "Month 3", "Month 6", "Month 9", "Month 12"],
-    datasets: [
-      {
-        label: "Average Infrastructure Health (%)",
-        data: [85, 82, 78, 72, 65],
-        borderColor: "#f5671a",
-        backgroundColor: "rgba(245, 103, 26, 0.1)",
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: "#f5671a",
-      },
-    ],
-  };
+  $: lineData = analyticsData
+    ? {
+        labels: ["Month 0", "Month 3", "Month 6", "Month 9", "Month 12"],
+        datasets: [
+          {
+            label: "Average Infrastructure Health (%)",
+            data: analyticsData.projections,
+            borderColor: "#f5671a",
+            backgroundColor: "rgba(245, 103, 26, 0.1)",
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointBackgroundColor: "#f5671a",
+          },
+        ],
+      }
+    : null;
 </script>
 
 <div class="analytics-view">
