@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import Card from "./Card.svelte";
+  import Skeleton from "./Skeleton.svelte";
 
   let inSupport = [];
   let loading = true;
@@ -104,7 +105,27 @@
         {:else}
           <div class="empty-column">
             {#if loading}
-              <p>Loading active cases...</p>
+              <div class="skeleton-cards">
+                {#each Array(3) as _}
+                  <div class="skeleton-card-wrap">
+                    <Card>
+                      <div class="card-top" style="margin-bottom: 12px">
+                        <Skeleton width="80px" height="20px" />
+                        <Skeleton width="40px" height="20px" />
+                      </div>
+                      <div class="card-body">
+                        <Skeleton width="100%" height="24px" margin="0 0 8px 0" />
+                        <Skeleton width="60%" height="18px" margin="0 0 16px 0" />
+                        <Skeleton width="100%" height="60px" />
+                      </div>
+                      <div class="card-footer" style="margin-top: 16px; padding-top: 12px">
+                        <Skeleton width="100px" height="16px" />
+                        <Skeleton width="80px" height="28px" />
+                      </div>
+                    </Card>
+                  </div>
+                {/each}
+              </div>
             {:else}
               <p>All clear! No assets in maintenance.</p>
             {/if}
@@ -335,6 +356,18 @@
     color: rgba(0, 0, 0, 0.4);
     font-style: italic;
     font-size: 14px;
+    width: 100%;
+  }
+
+  .skeleton-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+  }
+
+  .skeleton-card-wrap {
+    opacity: 0.7;
   }
 
   @media (max-width: 640px) {

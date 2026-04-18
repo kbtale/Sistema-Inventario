@@ -38,6 +38,7 @@ services:
     volumes:
       - ./dbdata:/var/lib/mysql
       - ./backend/sql:/docker-entrypoint-initdb.d
+    command: --innodb-buffer-pool-size=1G --innodb-log-file-size=256M --innodb-flush-log-at-trx-commit=2
     networks:
       - siotic-network
 

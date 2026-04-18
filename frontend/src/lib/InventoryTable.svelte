@@ -4,6 +4,7 @@
   import PulseIndicator from "./PulseIndicator.svelte";
   import Timeline from "./Timeline.svelte";
   import QRBadge from "./QRBadge.svelte";
+  import Skeleton from "./Skeleton.svelte";
 
   export let filterSede = null;
 
@@ -152,7 +153,21 @@
         <tr>
           <td colspan="9" class="empty-state">
             {#if loading}
-              Loading assets...
+              <div class="skeleton-grid">
+                {#each Array(5) as _}
+                  <div class="skeleton-row">
+                    <Skeleton width="30px" height="30px" borderRadius="50%" />
+                    <Skeleton width="100px" />
+                    <Skeleton width="120px" />
+                    <Skeleton width="80px" />
+                    <Skeleton width="80px" />
+                    <Skeleton width="100px" />
+                    <Skeleton width="120px" />
+                    <Skeleton width="100px" />
+                    <Skeleton width="140px" />
+                  </div>
+                {/each}
+              </div>
             {:else if searchQuery || selectedType}
               No matching assets found for your search.
             {:else}
@@ -397,6 +412,22 @@
     padding: var(--space-xl);
     opacity: 0.5;
     font-style: italic;
+  }
+
+  .skeleton-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 100%;
+  }
+
+  .skeleton-row {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
   }
 
   @media print {
