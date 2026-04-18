@@ -466,20 +466,20 @@ switch ($resource) {
         
         if ($type === 'hardware') {
             $stmt = $pdo->prepare("
-                SELECT 'Birth' as type, fecha_ingreso as date, 'Initial asset registration' as details, usuario_hardware as actor, 'bg-emerald-500' as color FROM Hardware WHERE id_hardware = :id
+                SELECT 'Birth' as type, fecha_ingreso as date, 'Initial asset registration' as details, usuario_hardware as actor, 'bg-emerald-500' as color, NULL as foto_url FROM Hardware WHERE id_hardware = :id
                 UNION ALL
-                SELECT 'Support Entry' as type, fecha_entrada as date, CONCAT('Support order: ', numero_orden) as details, nom_responsable as actor, 'bg-amber-500' as color FROM Entradas WHERE id_hardware = :id
+                SELECT 'Support Entry' as type, fecha_entrada as date, CONCAT('Support order: ', numero_orden) as details, nom_responsable as actor, 'bg-amber-500' as color, foto_url FROM Entradas WHERE id_hardware = :id
                 UNION ALL
-                SELECT 'Support Exit' as type, s.fecha_salida as date, s.reporte as details, s.nom_responsable as actor, 'bg-blue-500' as color FROM Salidas s JOIN Entradas e ON s.id_entrada = e.id_entrada WHERE e.id_hardware = :id
+                SELECT 'Support Exit' as type, s.fecha_salida as date, s.reporte as details, s.nom_responsable as actor, 'bg-blue-500' as color, NULL as foto_url FROM Salidas s JOIN Entradas e ON s.id_entrada = e.id_entrada WHERE e.id_hardware = :id
                 ORDER BY date ASC
             ");
         } else {
             $stmt = $pdo->prepare("
-                SELECT 'Birth' as type, fecha_ingreso as date, 'Initial mobile registration' as details, usuario_asignado as actor, 'bg-emerald-500' as color FROM Telefonos WHERE id_telefono = :id
+                SELECT 'Birth' as type, fecha_ingreso as date, 'Initial mobile registration' as details, usuario_asignado as actor, 'bg-emerald-500' as color, NULL as foto_url FROM Telefonos WHERE id_telefono = :id
                 UNION ALL
-                SELECT 'Support Entry' as type, fecha_entrada as date, CONCAT('Support order: ', numero_orden) as details, nom_responsable as actor, 'bg-amber-500' as color FROM Entradas WHERE id_unit_hardware = :id
+                SELECT 'Support Entry' as type, fecha_entrada as date, CONCAT('Support order: ', numero_orden) as details, nom_responsable as actor, 'bg-amber-500' as color, foto_url FROM Entradas WHERE id_unit_hardware = :id
                 UNION ALL
-                SELECT 'Support Exit' as type, s.fecha_salida as date, s.reporte as details, s.nom_responsable as actor, 'bg-blue-500' as color FROM Salidas s JOIN Entradas e ON s.id_entrada = e.id_entrada WHERE e.id_unit_hardware = :id
+                SELECT 'Support Exit' as type, s.fecha_salida as date, s.reporte as details, s.nom_responsable as actor, 'bg-blue-500' as color, NULL as foto_url FROM Salidas s JOIN Entradas e ON s.id_entrada = e.id_entrada WHERE e.id_unit_hardware = :id
                 ORDER BY date ASC
             ");
         }

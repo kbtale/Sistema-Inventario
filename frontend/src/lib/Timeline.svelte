@@ -11,6 +11,7 @@
   const dispatch = createEventDispatcher();
   let events = [];
   let loading = true;
+  let selectedPhoto = null;
 
   $: if (isOpen && assetId) {
     loadTimeline();
@@ -151,6 +152,19 @@
                   <span class="event-date">{formatDate(event.date)}</span>
                 </div>
                 <p class="event-details">{event.details}</p>
+                
+                {#if event.foto_url}
+                  <div class="event-photo">
+                    <button class="btn-lightbox" on:click={() => (selectedPhoto = `/uploads/${event.foto_url}`)}>
+                      <img src={`/uploads/${event.foto_url}`} alt="Auditing proof" />
+                      <div class="photo-overlay">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                        Inspect
+                      </div>
+                    </button>
+                  </div>
+                {/if}
+
                 {#if event.actor}
                   <div class="event-actor">
                     <span>Responsable:</span>
@@ -168,6 +182,22 @@
       <p>Digital Birth Certificate • SIOTIC Evolved</p>
     </div>
   </div>
+
+  {#if selectedPhoto}
+    <div 
+      class="lightbox-overlay" 
+      on:click={() => (selectedPhoto = null)}
+      on:keydown={(e) => ["Escape", "Enter", " "].includes(e.key) && (selectedPhoto = null)}
+      role="button"
+      tabindex="0"
+      transition:fade
+    >
+      <div class="lightbox-content" on:click|stopPropagation role="presentation">
+        <img src={selectedPhoto} alt="Auditing detail" transition:slide />
+        <button class="btn-close-lightbox" on:click={() => (selectedPhoto = null)}>&times;</button>
+      </div>
+    </div>
+  {/if}
 {/if}
 
 <style>
@@ -341,6 +371,97 @@
 
   .event-actor span {
     font-weight: 600;
+  }
+
+  .event-photo {
+    margin: var(--space-md) 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-lightbox {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: #000;
+    cursor: zoom-in;
+    display: block;
+  }
+
+  .btn-lightbox img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    transition: var(--transition);
+    opacity: 0.9;
+  }
+
+  .btn-lightbox:hover img {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+
+  .photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .btn-lightbox:hover .photo-overlay {
+    opacity: 1;
+  }
+
+  .lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+  }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-close-lightbox {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    line-height: 1;
   }
 
   .loading-state,
