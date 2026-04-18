@@ -51,6 +51,20 @@
   --text-3xl: 2rem;       /* 32px */
 }
 
+[data-theme='dark'] {
+  --color-bg-page: #0b0f1a;
+  --color-dark: #f3f4f6;
+  --color-white: #111827;
+  --color-gray-50: #1f2937;
+  --color-gray-100: #374151;
+  --color-gray-200: #4b5563;
+  --color-gray-300: #9ca3af;
+  
+  --glass-bg: rgba(17, 24, 39, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
 /* Premium Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

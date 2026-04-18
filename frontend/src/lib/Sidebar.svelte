@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import ThemeToggle from "./ThemeToggle.svelte";
   const dispatch = createEventDispatcher();
 
   export let view = "dashboard";
@@ -273,6 +274,8 @@
       >
       <span class="nav-label">Scan Asset</span>
     </button>
+
+    <ThemeToggle />
   </div>
 </nav>
 
