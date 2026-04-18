@@ -14,6 +14,7 @@
   import AssignmentForm from "./lib/AssignmentForm.svelte";
   import Login from "./lib/Login.svelte";
   import SedeMapper from "./lib/SedeMapper.svelte";
+  import HealthAnalytics from "./lib/HealthAnalytics.svelte";
   import { api } from "./lib/api";
 
   let isLoggedIn = api.isAuthenticated();
@@ -49,7 +50,7 @@
 
   const handleNavigate = (e) => {
     view = e.detail;
-    if (["dashboard", "mobile", "support_board"].includes(view)) {
+    if (["dashboard", "mobile", "support_board", "analytics"].includes(view)) {
       refreshData();
     }
   };
@@ -209,6 +210,17 @@
         <Card>
           <AssignmentForm on:success={refreshData} />
         </Card>
+        <div class="footer-actions">
+          <button class="btn-ghost" on:click={() => (view = "dashboard")}>
+            Back to Dashboard
+          </button>
+        </div>
+      {:else if view === "analytics"}
+        <header class="page-header">
+          <h1 class="main-title">Infrastructure Health Prediction</h1>
+          <p>Analyzing asset lifespan and maintenance risks.</p>
+        </header>
+        <HealthAnalytics />
         <div class="footer-actions">
           <button class="btn-ghost" on:click={() => (view = "dashboard")}>
             Back to Dashboard
