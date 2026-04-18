@@ -244,6 +244,35 @@
       >
       <span class="nav-label">Health Analytics</span>
     </button>
+
+    <div class="nav-divider"></div>
+
+    <button
+      type="button"
+      class="nav-item btn-scan-trigger"
+      on:click={() => dispatch("openScanner")}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" /><path
+          d="M21 17v2a2 2 0 0 1-2 2h-2"
+        /><path d="M7 21H5a2 2 0 0 1-2-2v-2" /><line
+          x1="7"
+          y1="12"
+          x2="17"
+          y2="12"
+        /><line x1="12" y1="7" x2="12" y2="17" /></svg
+      >
+      <span class="nav-label">Scan Asset</span>
+    </button>
   </div>
 </nav>
 
@@ -268,6 +297,12 @@
     color: var(--color-primary);
     opacity: 0.4;
     margin: var(--space-md) 0 var(--space-xs) var(--space-sm);
+  }
+
+  .nav-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.05);
+    margin: var(--space-md) var(--space-md);
   }
 
   .nav-item {
@@ -313,6 +348,23 @@
 
   .nav-item.active svg {
     opacity: 1;
+  }
+
+  .btn-scan-trigger {
+    background: var(--color-dark);
+    color: white;
+    margin-top: var(--space-sm);
+  }
+
+  .btn-scan-trigger:hover {
+    background: #000;
+    color: white;
+    border-color: #000;
+  }
+
+  .btn-scan-trigger svg {
+    opacity: 1;
+    color: var(--color-primary);
   }
 
   @media (max-width: 1024px) {

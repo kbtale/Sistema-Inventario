@@ -15,6 +15,8 @@
   import SedeMapper from "./lib/SedeMapper.svelte";
   import HealthAnalytics from "./lib/HealthAnalytics.svelte";
   import AlertCenter from "./lib/AlertCenter.svelte";
+  import Timeline from "./lib/Timeline.svelte";
+  import QRScanner from "./lib/QRScanner.svelte";
   import { api } from "./lib/api";
 
   let isLoggedIn = api.isAuthenticated();
@@ -27,6 +29,8 @@
   };
   let loading = true;
   let selectedSede = null;
+  let isScannerOpen = false;
+  let scannedAsset = null;
 
   let alertCenter;
 
@@ -68,6 +72,15 @@
     isLoggedIn = true;
     refreshData();
   };
+
+  const handleScanSuccess = (e) => {
+    isScannerOpen = false;
+    scannedAsset = {
+      id: e.detail.id,
+      type: e.detail.type,
+      name: `Scanned ${e.detail.type}`
+    };
+  };
 </script>
 
 {#if !isLoggedIn}
@@ -75,7 +88,11 @@
 {:else}
   <Layout>
     <div slot="sidebar">
-      <Sidebar {view} on:navigate={handleNavigate} />
+      <Sidebar 
+        {view} 
+        on:navigate={handleNavigate} 
+        on:openScanner={() => (isScannerOpen = true)} 
+      />
     </div>
 
     <div slot="content">
@@ -255,6 +272,20 @@
       </div>
     </div>
   </Layout>
+
+  {#if isScannerOpen}
+    <QRScanner on:close={() => (isScannerOpen = false)} on:scan={handleScanSuccess} />
+  {/if}
+
+  {#if scannedAsset}
+    <Timeline 
+      isOpen={!!scannedAsset} 
+      assetId={scannedAsset.id} 
+      assetType={scannedAsset.type} 
+      assetName={scannedAsset.name}
+      on:close={() => (scannedAsset = null)}
+    />
+  {/if}
 {/if}
 
 <style>
