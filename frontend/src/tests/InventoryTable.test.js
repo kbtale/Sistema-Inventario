@@ -93,3 +93,19 @@ test('InventoryTable respects external Sede filter', async () => {
     await waitFor(() => expect(queryByText('SEDE1-TAG')).toBeDefined());
     expect(queryByText('SEDE2-TAG')).toBeNull();
 });
+
+test('InventoryTable displays empty state message', async () => {
+    api.getHardware.mockResolvedValue([]);
+    const { findByText } = render(InventoryTable, { props: {} });
+    expect(await findByText('No movements recorded yet.')).toBeDefined();
+});
+
+test('InventoryTable displays no-search-results message', async () => {
+    api.getHardware.mockResolvedValue(mockAssets);
+    const { getByPlaceholderText, findByText } = render(InventoryTable, { props: {} });
+    
+    const searchInput = getByPlaceholderText('Search by tag, user, or model...');
+    await fireEvent.input(searchInput, { target: { value: 'NON_EXISTENT_TAG' } });
+    
+    expect(await findByText('No matching assets found for your search.')).toBeDefined();
+});
