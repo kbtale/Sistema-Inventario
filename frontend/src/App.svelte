@@ -12,9 +12,9 @@
   import SupportEntryForm from "./lib/SupportEntryForm.svelte";
   import SupportExitForm from "./lib/SupportExitForm.svelte";
   import AssignmentForm from "./lib/AssignmentForm.svelte";
-  import Login from "./lib/Login.svelte";
   import SedeMapper from "./lib/SedeMapper.svelte";
   import HealthAnalytics from "./lib/HealthAnalytics.svelte";
+  import AlertCenter from "./lib/AlertCenter.svelte";
   import { api } from "./lib/api";
 
   let isLoggedIn = api.isAuthenticated();
@@ -28,8 +28,17 @@
   let loading = true;
   let selectedSede = null;
 
+  let alertCenter;
+
   onMount(() => {
     if (isLoggedIn) refreshData();
+    
+    // Global polling for operational alerts every 2 minutes
+    const interval = setInterval(() => {
+      if (isLoggedIn && alertCenter) alertCenter.refresh();
+    }, 120000);
+
+    return () => clearInterval(interval);
   });
 
   async function refreshData() {
@@ -70,7 +79,18 @@
     </div>
 
     <div slot="content">
-    <div class="view-transition-container" in:fade={{ duration: 200 }}>
+      <div class="top-bar">
+        <div class="user-context">
+          <div class="avatar-circle">AD</div>
+          <div class="user-meta">
+            <span class="user-role">Administrator</span>
+            <span class="system-status">System Live</span>
+          </div>
+        </div>
+        <AlertCenter bind:this={alertCenter} />
+      </div>
+
+      <div class="view-transition-container" in:fade={{ duration: 200 }}>
       {#if view === "dashboard"}
         <header class="page-header">
           <h1 class="main-title">SIOTIC Dashboard</h1>
@@ -359,6 +379,54 @@
   .btn-ghost:hover {
     opacity: 1;
     color: var(--color-primary);
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  }
+
+  .user-context {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .avatar-circle {
+    width: 38px;
+    height: 38px;
+    background: var(--color-bg-accent);
+    color: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    border: 2px solid rgba(245, 103, 26, 0.1);
+  }
+
+  .user-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-role {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-dark);
+  }
+
+  .system-status {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #10b981;
+    letter-spacing: 0.05em;
   }
 
   @media (max-width: 1024px) {

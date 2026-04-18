@@ -74,6 +74,7 @@ export const api = {
   getSedeDistribution: () => apiFetch('/sedes/distribution'),
   getHealthAnalytics: () => apiFetch('/analytics/health'),
   getBudgetForecast: () => apiFetch('/analytics/budget'),
+  getAlerts: () => apiFetch('/alerts'),
 
   // POST/PUT methods
   registerHardware: (data) => apiFetch('/hardware', {
