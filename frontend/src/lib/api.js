@@ -76,6 +76,7 @@ export const api = {
   getSedeDistribution: () => apiFetch('/sedes/distribution'),
   getHealthAnalytics: () => apiFetch('/analytics/health'),
   getBudgetForecast: () => apiFetch('/analytics/budget'),
+  getStockForecast: () => apiFetch('/analytics/forecast'),
   getAlerts: () => apiFetch('/alerts'),
   getUsuarios: () => apiFetch('/usuarios'),
 

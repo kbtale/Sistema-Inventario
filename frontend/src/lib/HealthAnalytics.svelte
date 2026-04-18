@@ -3,6 +3,7 @@
   import { api } from "./api";
   import { Doughnut, Line } from "svelte-chartjs";
   import BudgetForecast from "./BudgetForecast.svelte";
+  import StockForecast from "./StockForecast.svelte";
   import {
     Chart as ChartJS,
     Title,
@@ -167,6 +168,7 @@
     </div>
 
     <BudgetForecast />
+    <StockForecast />
   {/if}
 </div>
 
