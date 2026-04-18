@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { api } from "./api";
   import { Doughnut, Line } from "svelte-chartjs";
+  import BudgetForecast from "./BudgetForecast.svelte";
   import {
     Chart as ChartJS,
     Title,
@@ -164,6 +165,8 @@
         </tbody>
       </table>
     </div>
+
+    <BudgetForecast />
   {/if}
 </div>
 

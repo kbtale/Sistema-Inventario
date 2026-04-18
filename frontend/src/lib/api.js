@@ -73,6 +73,7 @@ export const api = {
   getTimeline: (type, id) => apiFetch(`/timeline?type=${type}&id=${id}`),
   getSedeDistribution: () => apiFetch('/sedes/distribution'),
   getHealthAnalytics: () => apiFetch('/analytics/health'),
+  getBudgetForecast: () => apiFetch('/analytics/budget'),
 
   // POST/PUT methods
   registerHardware: (data) => apiFetch('/hardware', {
