@@ -242,7 +242,7 @@
           d="M18 11v3"
         /></svg
       >
-      <span class="nav-label">Health Analytics</span>
+      <span class="nav-label">Operational Intel</span>
     </button>
 
     <div class="nav-divider"></div>
