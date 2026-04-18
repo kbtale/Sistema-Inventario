@@ -4,6 +4,7 @@
   import PulseIndicator from "./PulseIndicator.svelte";
   import Timeline from "./Timeline.svelte";
   import QRBadge from "./QRBadge.svelte";
+  import Skeleton from "./Skeleton.svelte";
 
   let devices = [];
   let loading = true;
@@ -174,7 +175,13 @@
         <tr>
           <td colspan="9" class="empty-state">
             {#if loading}
-              Loading mobile devices...
+              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <Skeleton width="100%" height="40px" />
+                <Skeleton width="100%" height="40px" />
+                <Skeleton width="100%" height="40px" />
+                <Skeleton width="100%" height="40px" />
+                <Skeleton width="100%" height="40px" />
+              </div>
             {:else if searchQuery || selectedBrand}
               No matching devices found.
             {:else}

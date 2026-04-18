@@ -159,6 +159,8 @@
       </select>
     </div>
 
+    <div class="field-group">
+      <label for="e-resp">Responsible Party</label>
       <input
         id="e-resp"
         type="text"

@@ -1,5 +1,5 @@
 <script>
-  let { children, fallback } = $props();
+  let { children, fallback = null } = $props();
   let hasError = $state(false);
   let errorMessage = $state("");
 

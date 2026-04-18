@@ -4,6 +4,7 @@
   import { Doughnut, Line } from "svelte-chartjs";
   import BudgetForecast from "./BudgetForecast.svelte";
   import StockForecast from "./StockForecast.svelte";
+  import Skeleton from "./Skeleton.svelte";
   import {
     Chart as ChartJS,
     Title,
@@ -79,9 +80,27 @@
 
 <div class="analytics-view">
   {#if loading}
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Analyzing infrastructure health decay...</p>
+    <div class="analytics-grid">
+      <div class="chart-card card">
+        <Skeleton width="60%" height="24px" />
+        <div class="chart-container" style="display: flex; align-items: center; justify-content: center;">
+          <Skeleton width="200px" height="200px" />
+        </div>
+      </div>
+      <div class="chart-card card">
+        <Skeleton width="40%" height="24px" />
+        <div class="chart-container" style="display: flex; flex-direction: column; gap: 20px; justify-content: center;">
+          <Skeleton width="100%" height="200px" />
+        </div>
+      </div>
+    </div>
+    <div class="critical-assets card">
+      <Skeleton width="30%" height="24px" />
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+        <Skeleton width="100%" height="40px" />
+        <Skeleton width="100%" height="40px" />
+        <Skeleton width="100%" height="40px" />
+      </div>
     </div>
   {:else if analyticsData}
     <div class="analytics-grid">
