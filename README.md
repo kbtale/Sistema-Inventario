@@ -1,8 +1,14 @@
-# SIOTIC: Personal Inventory MVP
+# SIOTIC: Inventory MVP
+
+
+
+https://github.com/user-attachments/assets/2e03a818-d928-4d48-a304-ae43c351bf1d
+
+
 
 This is an old inventory project I started a long time ago. I finally wanted to finish it as a basic MVP to honor a legacy system that really helped me out back in the day. 
 
-It’s pretty much archived now, but I'm putting it out here in case it helps someone looking for a simple asset manager with some basic health tracking and a dark mode.
+It's pretty much archived now, but I'm putting it out here in case it helps someone looking for a simple asset manager with some basic health tracking and a dark mode.
 
 ## Main features
 
@@ -15,7 +21,7 @@ It’s pretty much archived now, but I'm putting it out here in case it helps so
 
 ## How to run it
 
-If you want to try it out, here’s the easiest way to get it running:
+If you want to try it out, here's the easiest way to get it running:
 
 1. **Setup your environment**: Copy `.env.example` to `.env` and set a password.
 2. **Start the containers**: Run `docker-compose -f docker-compose.prod.yml up -d --build` from the root.
