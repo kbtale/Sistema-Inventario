@@ -263,19 +263,45 @@
         stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
-        ><path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" /><path
-          d="M21 17v2a2 2 0 0 1-2 2h-2"
-        /><path d="M7 21H5a2 2 0 0 1-2-2v-2" /><line
-          x1="7"
-          y1="12"
-          x2="17"
-          y2="12"
-        /><line x1="12" y1="7" x2="12" y2="17" /></svg
+        ><path d="M3 7V5a2 2 0 0 1 2-2h2" /><path
+          d="M17 3h2a2 2 0 0 1 2 2v2"
+        /><path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path
+          d="M7 21H5a2 2 0 0 1-2-2v-2"
+        /><line x1="7" y1="12" x2="17" y2="12" /><line
+          x1="12"
+          y1="7"
+          x2="12"
+          y2="17"
+        /></svg
       >
       <span class="nav-label">Scan Asset</span>
     </button>
 
     <ThemeToggle />
+
+    <div class="nav-divider"></div>
+
+    <button
+      type="button"
+      class="nav-item btn-logout"
+      on:click={() => dispatch("logout")}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline
+          points="16 17 21 12 16 7"
+        /><line x1="21" y1="12" x2="9" y2="12" /></svg
+      >
+      <span class="nav-label">Sign Out</span>
+    </button>
   </div>
 </nav>
 
@@ -359,15 +385,25 @@
     margin-top: var(--space-sm);
   }
 
-  .btn-scan-trigger:hover {
-    background: #000;
-    color: white;
-    border-color: #000;
-  }
-
   .btn-scan-trigger svg {
     opacity: 1;
     color: var(--color-primary);
+  }
+
+  .btn-logout {
+    margin-top: auto;
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.1);
+  }
+
+  .btn-logout:hover {
+    background: rgba(239, 68, 68, 0.05);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+  }
+
+  .btn-logout svg {
+    opacity: 0.8;
   }
 
   @media (max-width: 1024px) {

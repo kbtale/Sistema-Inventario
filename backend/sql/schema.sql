@@ -103,3 +103,12 @@ CREATE TABLE IF NOT EXISTS Salidas (
     INDEX (id_entrada),
     FOREIGN KEY (id_entrada) REFERENCES Entradas(id_entrada) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS Usuarios_Login (
+    id_login INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'technician') DEFAULT 'technician',
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE SET NULL
+);

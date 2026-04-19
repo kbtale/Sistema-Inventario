@@ -16,8 +16,16 @@ if (strpos($requestUri, $basePath) === 0) {
 }
 
 $parts = explode('/', trim(explode('?', $requestUri)[0], '/'));
-$resource = '/' . ($parts[0] ?? '');
-$id = $parts[1] ?? null;
+
+// Handle multi-segment paths like /auth/login, /analytics/health, etc.
+$multiSegmentParents = ['auth', 'analytics', 'support', 'sedes'];
+if (isset($parts[0]) && in_array($parts[0], $multiSegmentParents) && isset($parts[1]) && !is_numeric($parts[1])) {
+    $resource = '/' . $parts[0] . '/' . $parts[1];
+    $id = $parts[2] ?? null;
+} else {
+    $resource = '/' . ($parts[0] ?? '');
+    $id = $parts[1] ?? null;
+}
 
 // middleware
 
@@ -67,7 +75,12 @@ switch ($resource) {
         echo json_encode([
             'status' => 'online',
             'version' => '2.0.0',
-            'system' => 'SIOTIC'
+            'system' => 'SIOTIC',
+            'environment' => [
+                'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? 'N/A',
+                'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? 'N/A',
+                'JWT_SECRET_SET' => !empty(getenv('JWT_SECRET'))
+            ]
         ]);
         break;
 
@@ -242,9 +255,13 @@ switch ($resource) {
 
     case '/auth/login':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $username = $data['username'] ?? '';
-            $password = $data['password'] ?? '';
+            $rawInput = file_get_contents('php://input');
+            $data = json_decode($rawInput, true);
+            
+            // Fallback to $_POST if JSON is empty
+            $username = $data['username'] ?? $_POST['username'] ?? '';
+            $password = $data['password'] ?? $_POST['password'] ?? '';
+            
             $secretKey = getenv('JWT_SECRET');
 
             if (!$secretKey) {
@@ -324,7 +341,7 @@ switch ($resource) {
             (SELECT t.id_telefono as id, 'telefonos' as type, t.marca_telefono as marca, t.modelo_telefono as modelo, t.nro_telefono as tag, e.id_entrada, e.fecha_entrada
              FROM Telefonos t 
              JOIN Estatus s ON t.id_estatus = s.id_estatus 
-             JOIN Entradas e ON t.id_unit_hardware = e.id_telefono
+             JOIN Entradas e ON t.id_telefono = e.id_unit_hardware
              WHERE s.estado_actual_unidad = 2)
         ";
         $stmt = $pdo->query($sql);

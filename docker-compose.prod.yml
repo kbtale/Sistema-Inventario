@@ -9,6 +9,11 @@ services:
     restart: always
     working_dir: /var/www
     env_file: .env
+    environment:
+      - DB_HOST=db
+      - MYSQL_DATABASE=siotic
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       - ./backend:/var/www
       - ./docker/php.prod.ini:/usr/local/etc/php/conf.d/prod.ini
@@ -16,14 +21,14 @@ services:
       - siotic-tier-internal
 
   webserver:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
     container_name: siotic-webserver-prod
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ./backend:/var/www
-      - ./frontend/dist:/var/www/frontend/dist
       - ./docker/nginx.prod.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
@@ -36,10 +41,12 @@ services:
     container_name: siotic-db-prod
     restart: always
     environment:
-      MYSQL_DATABASE: siotic
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=siotic
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
-      - ./dbdata_prod:/var/lib/mysql
+      - ./dbdata_v2:/var/lib/mysql
+      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./backend/sql/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
     command: --innodb-buffer-pool-size=1G --innodb-log-file-size=256M
     networks:
       - siotic-tier-internal
@@ -51,5 +58,5 @@ networks:
     driver: bridge
 
 volumes:
-  dbdata_prod:
+  dbdata_v2:
     driver: local

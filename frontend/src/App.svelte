@@ -17,6 +17,7 @@
   import AlertCenter from "./lib/AlertCenter.svelte";
   import Timeline from "./lib/Timeline.svelte";
   import QRScanner from "./lib/QRScanner.svelte";
+  import Login from "./lib/Login.svelte";
   import ErrorBoundary from "./lib/ErrorBoundary.svelte";
   import { api } from "./lib/api";
 
@@ -64,7 +65,7 @@
 
   const handleNavigate = (e) => {
     view = e.detail;
-    if (["dashboard", "mobile", "support_board", "analytics"].includes(view)) {
+    if (["dashboard", "inventory", "mobile", "support_board", "analytics"].includes(view)) {
       refreshData();
     }
   };
@@ -72,6 +73,12 @@
   const handleLoginSuccess = () => {
     isLoggedIn = true;
     refreshData();
+  };
+
+  const handleLogout = () => {
+    api.logout();
+    isLoggedIn = false;
+    view = "dashboard";
   };
 
   const handleScanSuccess = (e) => {
@@ -92,6 +99,7 @@
       <Sidebar 
         {view} 
         on:navigate={handleNavigate} 
+        on:logout={handleLogout}
         on:openScanner={() => (isScannerOpen = true)} 
       />
     </div>
@@ -155,11 +163,19 @@
                     </div>
                   {/if}
                 </div>
-                <button class="btn-primary" on:click={() => (view = "entry")}>
+                <button class="btn-primary" on:click={() => (view = "entry_hardware")}>
                   + Register Hardware
                 </button>
               </div>
               <InventoryTable filterSede={selectedSede?.id} />
+            </Card>
+          {:else if view === "inventory"}
+            <header class="page-header">
+              <h1 class="main-title">Hardware Inventory</h1>
+              <p>Full registry of all physical assets and computer equipment.</p>
+            </header>
+            <Card>
+              <InventoryTable />
             </Card>
           {:else if view === "mobile"}
             <header class="page-header">
@@ -174,7 +190,7 @@
               </div>
             </header>
             <MobileInventoryTable />
-          {:else if view === "entry"}
+          {:else if view === "entry_hardware"}
             <header class="page-header">
               <h1 class="main-title">Register Hardware</h1>
               <p>Add a new device or workstation to the central registry.</p>

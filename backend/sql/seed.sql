@@ -57,3 +57,7 @@ INSERT INTO Telefonos (tipo_telefono, marca_telefono, modelo_telefono, nro_telef
 INSERT INTO Entradas (fecha_entrada, id_hardware, id_unit_hardware, id_encargado, id_sede, numero_orden, nom_responsable, foto_url) VALUES 
 ('2024-02-10', 4, NULL, 2, 4, 'WO-2024-001', 'Carlos Mendoza', 'assets/photos/wo-2024-001.jpg'),
 ('2024-02-12', NULL, 3, 3, 4, 'WO-2024-002', 'Elena Rodriguez', 'assets/photos/wo-2024-002.jpg');
+
+-- 8. Login Credentials for Demo
+INSERT INTO Usuarios_Login (id_usuario, username, password_hash, role) VALUES 
+(1, 'admin', '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', 'admin');

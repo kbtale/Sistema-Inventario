@@ -1,8 +1,8 @@
 <?php 
-$host = 'db';
-$db   = 'siotic';
+$host = getenv('DB_HOST') ?: 'db';
+$db   = getenv('MYSQL_DATABASE') ?: 'siotic';
 $user = 'root';
-$pass = 'root';
+$pass = getenv('DB_ROOT_PASSWORD') ?: 'root';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

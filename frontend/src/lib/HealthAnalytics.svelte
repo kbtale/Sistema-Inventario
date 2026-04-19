@@ -15,6 +15,7 @@
     LinearScale,
     PointElement,
     LineElement,
+    Filler,
   } from "chart.js";
 
   ChartJS.register(
@@ -26,6 +27,7 @@
     LinearScale,
     PointElement,
     LineElement,
+    Filler,
   );
 
   let analyticsData = null;

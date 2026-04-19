@@ -4,6 +4,8 @@ backend/src/vendor/
 
 # Local database data
 dbdata/
+dbdata_prod/
+dbdata_v2/
 
 # Build outputs
 dist/
